@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tambah Pengguna</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/preline@1.0.5/dist/preline.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        * {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: url('/images/bg_moka.png') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+
+        .content-wrapper {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            width: 80%;
+            max-width: 1000px;
+            box-sizing: border-box;
+        }
+
+        .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-wrapper h2 {
+            color: #C15E15;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .add-user-button {
+            padding: 10px 20px;
+            background-color: #f15E15;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .add-user-button:hover {
+            background-color: #c14e14;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f15e15;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            background-color: #f15e15;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .action-buttons button:hover {
+            background-color: #c14e14;
+        }
+
+        .action-buttons .edit-button {
+            background-color: #4CAF50;
+        }
+
+        .action-buttons .delete-button {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <div class="header-wrapper">
+                <h2>Pengguna</h2>
+                <button class="add-user-button">Tambah Pengguna</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Username</th>
+                        <th>Jabatan</th>
+                        <th>Bidang</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Menampilkan data pengguna dengan array -->
+                    <script>
+                        const users = [
+                            { nama: "John Doe", username: "johndoe", jabatan: "Manager", bidang: "HR" },
+                            { nama: "Jane Smith", username: "janesmith", jabatan: "Staff", bidang: "IT" },
+                            { nama: "Michael Brown", username: "michaelbrown", jabatan: "Supervisor", bidang: "Finance" },
+                            { nama: "Emily Davis", username: "emilydavis", jabatan: "Assistant", bidang: "Marketing" },
+                            { nama: "David Wilson", username: "davidwilson", jabatan: "Coordinator", bidang: "Sales" },
+                            { nama: "Alice Moore", username: "alicemoore", jabatan: "Assistant", bidang: "Finance" },
+                            { nama: "Robert Garcia", username: "robertgarcia", jabatan: "Supervisor", bidang: "HR" },
+                            { nama: "Linda Lee", username: "lindalee", jabatan: "Manager", bidang: "Marketing" },
+                            { nama: "James Harris", username: "jamesharris", jabatan: "Director", bidang: "Sales" },
+                            { nama: "Susan Clark", username: "susanclark", jabatan: "Manager", bidang: "IT" }
+                        ];
+
+                        const tbody = document.querySelector('tbody');
+                        users.forEach(user => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${user.nama}</td>
+                                <td>${user.username}</td>
+                                <td>${user.jabatan}</td>
+                                <td>${user.bidang}</td>
+                                <td class="action-buttons">
+                                    <button class="edit-button">Edit</button>
+                                    <button class="delete-button">Hapus</button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    </script>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>
