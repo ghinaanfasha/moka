@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitoring Kinerja (MOKA) Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/preline@1.0.5/dist/preline.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        * {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: url('/images/bg_moka.png') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+
+        .title-wrapper {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #C15E15;
+            font-size: 35px;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .content-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 40px;
+            width: 80%;
+            max-width: 900px;
+            box-sizing: border-box;
+        }
+
+        .form-login {
+            max-width: 400px;
+            width: 100%;
+            padding-left: 40px;
+        }
+
+        .form-login .text {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #C15E15;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+        }
+
+        .group button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            background-color: #f15E15;
+            color: white;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        .logo-wrapper img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .logo-wrapper .text-6 {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #C15E15;
+        }
+
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-wrapper input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+        }
+
+        .password-wrapper i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .logo-wrapper {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <div class="title-wrapper">
+            MONITORING KINERJA <br />
+            (MOKA)
+        </div>
+
+        <div class="content-wrapper">
+            <div class="logo-wrapper">
+                <div class="pic">
+                    <img src="/images/logo_sumbar.png" alt="Logo Sumbar">
+                </div>
+                <div class="text-6">
+                    BADAN PERENCANAAN PEMBANGUNAN DAERAH<br />
+                    SUMATERA BARAT
+                </div>
+            </div>
+
+            <div class="form-login">
+                <div class="text" style="color: #C15E15; text-align: center;">Login</div>
+                <form action="#" method="POST">
+                    <label for="username" class="text-3" style="color: #C15E15;">Username</label>
+                    <input type="text" id="username" name="username" class="input-field" placeholder="Username" required autofocus>
+
+                    <label for="password" class="text-4" style="color: #C15E15;">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" class="input-field" placeholder="Password" required>
+                        <i id="togglePassword" class="fa fa-eye-slash"></i>
+                    </div>
+
+                    <div class="group">
+                        <button type="submit" class="text-5">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function (e) {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+            this.classList.toggle('fa-eye');
+        });
+    </script>
+
+</body>
+
+</html>
