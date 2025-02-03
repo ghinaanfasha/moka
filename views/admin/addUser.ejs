@@ -29,7 +29,6 @@
                     <thead>
                         <tr class="bg-[#C15E15] text-white">
                             <th class="p-3 border">No</th>
-                            <th class="p-3 border">Nama</th>
                             <th class="p-3 border">Username</th>
                             <th class="p-3 border">Jabatan</th>
                             <th class="p-3 border">Bidang</th>
@@ -42,7 +41,6 @@
                             const users = Array.from({ length: 10 }, (_, i) => ({
                                 id: i + 1,
                                 no: i + 1,
-                                nama: `User ${i + 1}`,
                                 username: `user${i + 1}`,
                                 jabatan: `Jabatan ${i + 1}`,
                                 bidang: `Bidang ${i + 1}`
@@ -52,7 +50,6 @@
                                 userTableBody.innerHTML += `
                                     <tr class="border">
                                         <td class="p-3 border">${user.no}</td>
-                                        <td class="p-3 border">${user.nama}</td>
                                         <td class="p-3 border">${user.username}</td>
                                         <td class="p-3 border">${user.jabatan}</td>
                                         <td class="p-3 border">${user.bidang}</td>
