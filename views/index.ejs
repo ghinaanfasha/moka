@@ -30,7 +30,7 @@
         <!-- Form Login -->
         <div class="w-full max-w-xs md:max-w-sm">
             <h2 class="text-center text-[#C15E15] text-3xl font-bold mb-6">Login</h2>
-            <form action="#" method="POST">
+            <form id="loginForm">
                 <label for="username" class="block text-[#C15E15] font-semibold">Username</label>
                 <input type="text" id="username" name="username" class="w-full p-3 border border-gray-300 rounded-lg mt-1 mb-4" placeholder="Username" required autofocus />
                 
@@ -46,6 +46,45 @@
     </div>
 
     <script>
+        function redirectWithToken(path) {
+            const token = localStorage.getItem('accessToken');
+            window.location.href = path;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'include' // Important for cookies
+                });
+
+                const data = await response.json();
+                console.log('Login response:', data);
+
+                if (response.ok) {
+                    // Store user data if needed
+                    localStorage.setItem('userData', JSON.stringify(data.data.user));
+                    
+                    // Redirect to the URL provided by the server
+                    window.location.href = data.data.redirectUrl;
+                } else {
+                    alert('Login gagal: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat login');
+            }
+        });
+      
         const togglePassword = document.getElementById('togglePassword');
         const passwordField = document.getElementById('password');
         
