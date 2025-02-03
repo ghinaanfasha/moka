@@ -1,6 +1,4 @@
-/*! tailwindcss v4.0.0 | MIT License | https://tailwindcss.com */
-@tailwind base;
-@tailwind components;
+/*! tailwindcss v4.0.3 | MIT License | https://tailwindcss.com */
 .pointer-events-none {
   pointer-events: none;
 }
@@ -49,9 +47,6 @@
 .z-50 {
   z-index: 50;
 }
-.mt-\[30px\] {
-  margin-top: 30px;
-}
 .mt-\[50px\] {
   margin-top: 50px;
 }
@@ -96,9 +91,6 @@
 }
 .w-\[1229px\] {
   width: 1229px;
-}
-.w-\[1300px\] {
-  width: 1300px;
 }
 .w-\[1400px\] {
   width: 1400px;
@@ -177,13 +169,6 @@
   border-style: var(--tw-border-style);
   border-width: 1px;
 }
-.border-b-2 {
-  border-bottom-style: var(--tw-border-style);
-  border-bottom-width: 2px;
-}
-.border-\[\#C15E15\] {
-  border-color: #C15E15;
-}
 .bg-\[\#C15E15\] {
   background-color: #C15E15;
 }
@@ -217,17 +202,11 @@
 .text-left {
   text-align: left;
 }
-.text-right {
-  text-align: right;
-}
 .text-\[\#C15E15\] {
   color: #C15E15;
 }
 .opacity-0 {
   opacity: 0%;
-}
-.opacity-80 {
-  opacity: 80%;
 }
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
