@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tambah Tugas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@heroicons/react/solid"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
+
+    <!-- Navbar -->
+    <%- include('../layout/navKepala') %>
+
+    <!-- Kontainer Form -->
+    <div class="relative w-full flex flex-grow justify-center items-center mt-14">
+        <a href="/kepala/dashboard" class="absolute left-10 top-[-30px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+            <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
+            <span class="text-lg font-medium">Kembali</span>
+        </a>
+
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-16 shadow-lg w-[1400px] relative">
+            <div class="flex justify-between items-center mb-6 relative">
+                <h2 class="text-2xl font-bold text-[#C15E15]">Form Tambah Tugas</h2>
+
+                <!-- Dropdown Pilih Tipe -->
+                <div class="relative z-50">
+                    <button id="dropdownButton" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10] flex items-center">
+                        <span id="dropdownText">Pilih Tipe</span>
+                        <ion-icon name="chevron-down-outline" class="ml-2"></ion-icon>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg border border-gray-300">
+                        <button class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" onclick="setDropdownValue('Kelompok')">Kelompok</button>
+                        <button class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" onclick="setDropdownValue('Individu')">Individu</button>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/kepala/addTugas" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <div class="grid grid-cols-2 gap-10 relative">
+                    <div class="absolute inset-y-0 left-1/2 w-0.5 bg-gray-300"></div>
+                    
+                    <!-- Kiri: Nama Tugas, Pilih Staff, Tanggal & Jam Pengumpulan -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium">Nama Tugas</label>
+                            <input type="text" name="nama_tugas" required autofocus placeholder="Masukkan Nama Tugas" 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium">Pilih Staff</label>
+                            <select name="staff" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                                <option value="" disabled selected>Pilih Staff</option>
+                                <option value="Staff A">Staff A</option>
+                                <option value="Staff B">Staff B</option>
+                                <option value="Staff C">Staff C</option>
+                                <option value="Staff D">Staff D</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium">Tanggal Pengumpulan</label>
+                                <input type="date" name="tanggal_pengumpulan" required 
+                                    class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium">Jam Pengumpulan</label>
+                                <input type="time" name="jam_pengumpulan" required 
+                                    class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Deskripsi Tugas & Upload Dokumen -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium">Deskripsi Tugas</label>
+                            <textarea name="deskripsi" rows="4" required placeholder="Masukkan deskripsi tugas..." 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium">Upload Dokumen</label>
+                            <label class="flex flex-col items-center px-4 py-6 bg-white text-blue-600 rounded-lg shadow-md tracking-wide border border-gray-300 cursor-pointer hover:bg-gray-100">
+                                <ion-icon name="cloud-upload-outline" class="text-4xl"></ion-icon>
+                                <span id="fileLabel" class="mt-2 text-sm">Pilih file untuk diunggah</span>
+                                <input type="file" name="dokumen" class="hidden" id="fileInput">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700">Tambah Tugas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-auto">
+        <%- include('../layout/footer') %>
+    </div>
+
+    <!-- Script untuk Dropdown & Upload Dokumen -->
+    <script>
+        // Dropdown Tipe
+        document.getElementById('dropdownButton').addEventListener('click', function () {
+            document.getElementById('dropdownMenu').classList.toggle('hidden');
+        });
+
+        function setDropdownValue(value) {
+            document.getElementById('dropdownText').textContent = value;
+            document.getElementById('dropdownMenu').classList.add('hidden');
+        }
+
+        // Menampilkan Nama File yang Dipilih
+        document.getElementById('fileInput').addEventListener('change', function() {
+            const fileLabel = document.getElementById('fileLabel');
+            if (this.files.length > 0) {
+                fileLabel.textContent = this.files[0].name;
+            } else {
+                fileLabel.textContent = "Pilih file untuk diunggah";
+            }
+        });
+    </script>
+
+</body>
+</html>
