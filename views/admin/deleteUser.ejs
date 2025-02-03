@@ -1,0 +1,30 @@
+<!-- Tombol Hapus di Tabel -->
+<button onclick="openDeleteModal(1)" class="bg-red-500 p-2 rounded-full hover:bg-red-700">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+    </svg>
+</button>
+
+<!-- Modal Konfirmasi Hapus -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-6 rounded-md shadow-lg w-[400px]">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Konfirmasi Hapus</h2>
+        <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus pengguna ini?</p>
+        <div class="flex justify-end space-x-4">
+            <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500">Batal</button>
+            <a id="confirmDelete" href="#" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Ya, Hapus</a>
+        </div>
+    </div>
+</div>
+
+<!-- Script JavaScript untuk Modal -->
+<script>
+    function openDeleteModal(userId) {
+        document.getElementById("deleteModal").classList.remove("hidden");
+        document.getElementById("confirmDelete").href = "/admin/deleteUser/" + userId;
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.add("hidden");
+    }
+</script>

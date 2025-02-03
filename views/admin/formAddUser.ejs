@@ -7,8 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@heroicons/react/solid"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
-    <!-- Import SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
     
@@ -81,33 +79,46 @@
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white p-6 rounded-md shadow-lg w-[400px] transform scale-95 transition-transform duration-300">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Konfirmasi Hapus</h2>
+            <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus pengguna ini?</p>
+            <div class="flex justify-end space-x-4">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition duration-200">Batal</button>
+                <a id="confirmDelete" href="#" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">Ya, Hapus</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <%- include('../layout/footer') %>
 
-    <!-- Script untuk Pop-Up Konfirmasi Hapus -->
+    <!-- Script untuk Modal Konfirmasi Hapus -->
     <script>
         function openDeleteModal(userId) {
-            Swal.fire({
-                title: "Konfirmasi Hapus",
-                text: "Apakah Anda yakin ingin menghapus pengguna ini?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Hapus",
-                cancelButtonText: "Batal",
-                customClass: {
-                    popup: "rounded-lg shadow-lg",
-                    title: "text-red-600 font-semibold",
-                    confirmButton: "bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700",
-                    cancelButton: "bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke halaman delete
-                    window.location.href = "/admin/deleteUser/" + userId;
-                }
-            });
+            const modal = document.getElementById("deleteModal");
+            const confirmButton = document.getElementById("confirmDelete");
+
+            // Tampilkan modal dengan efek fade-in & scale-up
+            modal.classList.remove("opacity-0", "pointer-events-none");
+            modal.querySelector("div").classList.remove("scale-95");
+            modal.querySelector("div").classList.add("scale-100");
+
+            // Set URL delete ke tombol konfirmasi
+            confirmButton.href = "/admin/deleteUser/" + userId;
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById("deleteModal");
+
+            // Animasi fade-out & scale-down sebelum menghilangkan modal
+            modal.querySelector("div").classList.add("scale-95");
+            modal.querySelector("div").classList.remove("scale-100");
+            
+            setTimeout(() => {
+                modal.classList.add("opacity-0", "pointer-events-none");
+            }, 200);
         }
     </script>
 
