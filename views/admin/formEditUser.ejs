@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Pengguna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@heroicons/react/solid"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
+
+    <!-- Navbar -->
+    <%- include('../layout/navAdmin') %>
+
+    <!-- Kontainer Form -->
+    <div class="relative w-full flex flex-grow justify-center items-center mt-14">
+        <a href="/admin/dashboard" class="absolute left-10 top-[-30px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+            <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon><span class="text-lg font-medium">Kembali</span>
+        </a>
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-16 shadow-lg w-[1400px]">
+            <h2 class="text-2xl font-bold text-[#C15E15] mb-6 text-left">Edit Pengguna</h2>
+
+            <form action="/admin/updateProfile" method="POST" class="space-y-6">
+                <div class="grid grid-cols-2 gap-10 relative">
+                    <!-- Garis Pembatas Tengah -->
+                    <div class="absolute inset-y-0 left-1/2 w-0.5 bg-gray-300"></div>
+                    
+                    <!-- Kiri: Username, Jabatan, Bidang -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium">Username</label>
+                            <input type="text" name="username" value="mediiswandi" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium">Jabatan</label>
+                            <select name="jabatan" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                                <option value="Kepala Bappeda" selected>Kepala BAPPEDA</option>
+                                <option value="Kabid">Kepala Bidang</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium">Bidang</label>
+                            <select name="bidang" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                                <option value="P2EPD" selected>P2EPD</option>
+                                <option value="Infraswil">Infrastruktur dan Kewilayan</option>
+                                <option value="EKOSDA">EKO SDA</option>
+                                <option value="Umum">Umum</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Ubah Password -->
+                    <div class="space-y-6">
+                        <div class="relative">
+                            <label class="block text-gray-700 font-medium">Password Baru</label>
+                            <input type="password" id="password" name="password" class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            <button type="button" id="togglePassword" class="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center text-gray-500">
+                                <ion-icon id="eyeIcon" name="eye-off-outline" class="h-6 w-6"></ion-icon>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <label class="block text-gray-700 font-medium">Konfirmasi Password Baru</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            <button type="button" id="toggleConfirmPassword" class="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center text-gray-500">
+                                <ion-icon id="eyeIconConfirm" name="eye-off-outline" class="h-6 w-6"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-auto">
+        <%- include('../layout/footer') %>
+    </div>
+
+    <!-- Script untuk Hide/Show Password -->
+    <script>
+        function toggleVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('name', 'eye-outline');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('name', 'eye-off-outline');
+            }
+        }
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            toggleVisibility('password', 'eyeIcon');
+        });
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            toggleVisibility('confirmPassword', 'eyeIconConfirm');
+        });
+    </script>
+</body>
+</html>

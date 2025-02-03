@@ -5,6 +5,18 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+router.get('/formEditUser', (req, res) => {
+  res.render('admin/formEditUser'); // Perbaiki path ke folder admin
+});
+router.get('/profil', (req, res) => {
+  res.render('profil'); // Perbaiki path ke folder admin
+});
+router.get('/formAddUser', (req, res) => {
+  res.render('admin/formAddUser'); // Perbaiki path ke folder admin
+});
+router.get('/addUser', (req, res) => {
+  res.render('admin/addUser'); // Perbaiki path ke folder admin
+});
 
 /* GET login page. */
 router.get('/login', function(req, res, next) {

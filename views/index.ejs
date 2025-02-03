@@ -1,11 +1,60 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>MOKA</title>
-    <link href="/stylesheets/output.css" rel="stylesheet">
-  </head>
-  <body class=>
-    <h1>MOKA</h1>
-    <p>Welcome to MOKA</p>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOKA|Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('/images/bg_moka.png');">
+    <div class="absolute top-10 text-center text-[#C15E15] text-3xl font-bold">
+        Monitoring Kerja <br />(MOKA)
+    </div>
+
+    <div class="flex flex-col md:flex-row bg-white bg-opacity-80 p-6 md:p-10 rounded-lg shadow-lg w-full max-w-4xl">
+        <div class="flex flex-col items-center md:mr-8 mb-6 md:mb-0">
+            <img src="/images/logo_sumbar.png" alt="Logo Sumbar" class="w-32 h-auto" />
+            <p class="text-center text-[#C15E15] font-bold mt-2 text-lg">
+                BADAN PERENCANAAN PEMBANGUNAN DAERAH <br /> SUMATERA BARAT
+            </p>
+        </div>
+
+        <!-- Form Login -->
+        <div class="w-full max-w-xs md:max-w-sm">
+            <h2 class="text-center text-[#C15E15] text-3xl font-bold mb-6">Login</h2>
+            <form action="#" method="POST">
+                <label for="username" class="block text-[#C15E15] font-semibold">Username</label>
+                <input type="text" id="username" name="username" class="w-full p-3 border border-gray-300 rounded-lg mt-1 mb-4" placeholder="Username" required autofocus />
+                
+                <label for="password" class="block text-[#C15E15] font-semibold">Password</label>
+                <div class="relative">
+                    <input type="password" id="password" name="password" class="w-full p-3 border border-gray-300 rounded-lg mt-1 mb-4" placeholder="Password" required />
+                    <i id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600 fas fa-eye-slash"></i>
+                </div>
+                
+                <button type="submit" class="w-full bg-[#F15E15] text-white p-3 rounded-lg text-lg font-semibold hover:bg-[#d14e10]">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function () {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+            this.classList.toggle('fa-eye');
+        });
+    </script>
+</body>
 </html>
