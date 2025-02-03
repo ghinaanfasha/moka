@@ -5,17 +5,23 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+router.get('/formAddTugas', (req, res) => {
+  res.render('kepala/formAddTugas'); 
+});
+router.get('/tugas', (req, res) => {
+  res.render('kepala/tugas'); 
+});
 router.get('/formEditUser', (req, res) => {
-  res.render('admin/formEditUser'); // Perbaiki path ke folder admin
+  res.render('admin/formEditUser'); 
 });
 router.get('/profil', (req, res) => {
-  res.render('profil'); // Perbaiki path ke folder admin
+  res.render('profil'); 
 });
 router.get('/formAddUser', (req, res) => {
-  res.render('admin/formAddUser'); // Perbaiki path ke folder admin
+  res.render('admin/formAddUser'); 
 });
 router.get('/addUser', (req, res) => {
-  res.render('admin/addUser'); // Perbaiki path ke folder admin
+  res.render('admin/addUser');
 });
 
 /* GET login page. */

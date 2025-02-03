@@ -1,125 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manajemen Pengguna</title>
+    <title>Tambah Pengguna</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@heroicons/react/solid"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
 </head>
-<body class="h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
-    
+<body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
+
     <!-- Navbar -->
     <%- include('../layout/navAdmin') %>
-    
-    <!-- Kontainer Utama -->
-    <div class="flex justify-center items-start mt-[50px] ml-[20px]">
-        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-[#C15E15]">Pengguna</h2>
-                <a href="/admin/addUser" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10]">Tambah Pengguna</a>
-            </div>
-            
-            <!-- Tabel -->
-            <div class="overflow-auto w-full">
-                <table class="w-full border-collapse border border-gray-300 text-center">
-                    <thead>
-                        <tr class="bg-[#C15E15] text-white">
-                            <th class="p-3 border">No</th>
-                            <th class="p-3 border">Nama</th>
-                            <th class="p-3 border">Username</th>
-                            <th class="p-3 border">Jabatan</th>
-                            <th class="p-3 border">Bidang</th>
-                            <th class="p-3 border">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody" class="text-gray-700">
-                        <script>
-                            const userTableBody = document.getElementById('userTableBody');
-                            const users = Array.from({ length: 10 }, (_, i) => ({
-                                id: i + 1,
-                                no: i + 1,
-                                nama: `User ${i + 1}`,
-                                username: `user${i + 1}`,
-                                jabatan: `Jabatan ${i + 1}`,
-                                bidang: `Bidang ${i + 1}`
-                            }));
 
-                            users.forEach(user => {
-                                userTableBody.innerHTML += `
-                                    <tr class="border">
-                                        <td class="p-3 border">${user.no}</td>
-                                        <td class="p-3 border">${user.nama}</td>
-                                        <td class="p-3 border">${user.username}</td>
-                                        <td class="p-3 border">${user.jabatan}</td>
-                                        <td class="p-3 border">${user.bidang}</td>
-                                        <td class="p-3 border flex justify-center space-x-2">
-                                            <!-- Tombol Edit -->
-                                            <a href="../admin/formEditUser/${user.id}" class="bg-green-500 p-2 rounded-full hover:bg-green-700">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M4 21v-4l14-14 4 4-14 14H4zm2-2h2l11-11-2-2-11 11v2z"/>
-                                                </svg>
-                                            </a>
-                                            
-                                            <!-- Tombol Hapus -->
-                                            <button onclick="openDeleteModal(${user.id})" class="bg-red-500 p-2 rounded-full hover:bg-red-700">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `;
-                            });
-                        </script>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <!-- Kontainer Form -->
+    <div class="relative w-full flex flex-grow justify-center items-center mt-14">
+        <a href="/admin/dashboard" class="absolute left-10 top-[-30px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+            <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
+            <span class="text-lg font-medium">Kembali</span>
+        </a>
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-16 shadow-lg w-[1400px]">
+            <h2 class="text-2xl font-bold text-[#C15E15] mb-6 text-left">Tambah Pengguna</h2>
 
-    <!-- Modal Konfirmasi Hapus -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white p-6 rounded-md shadow-lg w-[400px] transform scale-95 transition-transform duration-300">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Konfirmasi Hapus</h2>
-            <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus pengguna ini?</p>
-            <div class="flex justify-end space-x-4">
-                <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition duration-200">Batal</button>
-                <a id="confirmDelete" href="#" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">Ya, Hapus</a>
-            </div>
+            <form action="/admin/addUser" method="POST" class="space-y-6">
+                <div class="grid grid-cols-2 gap-10 relative">
+                    <!-- Garis Pembatas Tengah -->
+                    <div class="absolute inset-y-0 left-1/2 w-0.5 bg-gray-300"></div>
+                    
+                    <!-- Kiri: Username, Jabatan, Bidang -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium">Username</label>
+                            <input type="text" name="username" required placeholder="Masukkan Username" class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium">Jabatan</label>
+                            <select name="jabatan" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                                <option value="" disabled selected>Pilih Jabatan</option>
+                                <option value="Kepala Bappeda">Kepala BAPPEDA</option>
+                                <option value="Kabid">Kepala Bidang</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium">Bidang</label>
+                            <select name="bidang" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                                <option value="" disabled selected>Pilih Bidang</option>
+                                <option value="P2EPD">P2EPD</option>
+                                <option value="Infraswil">Infrastruktur dan Kewilayahan</option>
+                                <option value="EKOSDA">EKO SDA</option>
+                                <option value="Umum">Umum</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Password -->
+                    <div class="space-y-6">
+                        <div class="relative">
+                            <label class="block text-gray-700 font-medium">Password</label>
+                            <input type="password" id="password" name="password" required placeholder="Masukkan Password" 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-4 flex items-center text-gray-500">
+                                <ion-icon id="eyeIcon" name="eye-off-outline" class="h-6 w-6"></ion-icon>
+                            </button>
+                        </div>
+                        
+                        <div class="relative">
+                            <label class="block text-gray-700 font-medium">Konfirmasi Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Ulangi Password" 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            
+                            <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-4 flex items-center text-gray-500">
+                                <ion-icon id="eyeIconConfirm" name="eye-off-outline" class="h-6 w-6"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700">Tambah Pengguna</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Footer -->
-    <%- include('../layout/footer') %>
+    <div class="mt-auto">
+        <%- include('../layout/footer') %>
+    </div>
 
-    <!-- Script untuk Modal Konfirmasi Hapus -->
+    <!-- Script untuk Hide/Show Password -->
     <script>
-        function openDeleteModal(userId) {
-            const modal = document.getElementById("deleteModal");
-            const confirmButton = document.getElementById("confirmDelete");
-
-            // Tampilkan modal dengan efek fade-in & scale-up
-            modal.classList.remove("opacity-0", "pointer-events-none");
-            modal.querySelector("div").classList.remove("scale-95");
-            modal.querySelector("div").classList.add("scale-100");
-
-            // Set URL delete ke tombol konfirmasi
-            confirmButton.href = "/admin/deleteUser/" + userId;
+        function toggleVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('name', 'eye-outline');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('name', 'eye-off-outline');
+            }
         }
 
-        function closeDeleteModal() {
-            const modal = document.getElementById("deleteModal");
-
-            // Animasi fade-out & scale-down sebelum menghilangkan modal
-            modal.querySelector("div").classList.add("scale-95");
-            modal.querySelector("div").classList.remove("scale-100");
-            
-            setTimeout(() => {
-                modal.classList.add("opacity-0", "pointer-events-none");
-            }, 200);
-        }
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            toggleVisibility('password', 'eyeIcon');
+        });
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            toggleVisibility('confirmPassword', 'eyeIconConfirm');
+        });
     </script>
 
 </body>
