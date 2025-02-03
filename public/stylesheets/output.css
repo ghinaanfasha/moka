@@ -1,22 +1,6 @@
-/*! tailwindcss v4.0.0 | MIT License | https://tailwindcss.com */
-@tailwind base;
-@tailwind components;
+/*! tailwindcss v4.0.3 | MIT License | https://tailwindcss.com */
 .pointer-events-none {
   pointer-events: none;
-}
-.collapse {
-  visibility: collapse;
-}
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
 }
 .absolute {
   position: absolute;
@@ -36,9 +20,6 @@
 .top-\[-10px\] {
   top: -10px;
 }
-.top-\[-20px\] {
-  top: -20px;
-}
 .top-\[-30px\] {
   top: -30px;
 }
@@ -51,9 +32,6 @@
 .z-50 {
   z-index: 50;
 }
-.mx-auto {
-  margin-inline: auto;
-}
 .mt-\[50px\] {
   margin-top: 50px;
 }
@@ -65,9 +43,6 @@
 }
 .block {
   display: block;
-}
-.contents {
-  display: contents;
 }
 .flex {
   display: flex;
@@ -96,41 +71,11 @@
 .w-\[400px\] {
   width: 400px;
 }
-.w-\[500px\] {
-  width: 500px;
-}
-.w-\[800px\] {
-  width: 800px;
-}
-.w-\[1000px\] {
-  width: 1000px;
-}
-.w-\[1100px\] {
-  width: 1100px;
-}
-.w-\[1200px\] {
-  width: 1200px;
-}
 .w-\[1229px\] {
   width: 1229px;
 }
-.w-\[1250px\] {
-  width: 1250px;
-}
-.w-\[1300px\] {
-  width: 1300px;
-}
-.w-\[14000px\] {
-  width: 14000px;
-}
 .w-\[1400px\] {
   width: 1400px;
-}
-.w-\[1px\] {
-  width: 1px;
-}
-.w-auto {
-  width: auto;
 }
 .w-full {
   width: 100%;
@@ -166,17 +111,11 @@
 .cursor-pointer {
   cursor: pointer;
 }
-.appearance-none {
-  appearance: none;
-}
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .flex-col {
   flex-direction: column;
-}
-.flex-wrap {
-  flex-wrap: wrap;
 }
 .items-center {
   align-items: center;
@@ -193,13 +132,6 @@
 .justify-end {
   justify-content: flex-end;
 }
-.-space-y-px {
-  :where(& > :not(:last-child)) {
-    --tw-space-y-reverse: 0;
-    margin-block-start: calc(-1px * var(--tw-space-y-reverse));
-    margin-block-end: calc(-1px * calc(1 - var(--tw-space-y-reverse)));
-  }
-}
 .overflow-auto {
   overflow: auto;
 }
@@ -212,15 +144,9 @@
 .rounded-full {
   border-radius: calc(infinity * 1px);
 }
-.rounded-none {
-  border-radius: 0;
-}
 .border {
   border-style: var(--tw-border-style);
   border-width: 1px;
-}
-.border-transparent {
-  border-color: transparent;
 }
 .bg-\[\#C15E15\] {
   background-color: #C15E15;
@@ -246,25 +172,14 @@
 .text-left {
   text-align: left;
 }
-.text-right {
-  text-align: right;
-}
 .text-\[\#C15E15\] {
   color: #C15E15;
 }
 .opacity-0 {
   opacity: 0%;
 }
-.outline {
-  outline-style: var(--tw-outline-style);
-  outline-width: 1px;
-}
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
-}
-.backdrop-filter {
-  -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-  backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
 }
 .transition {
   transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter;
@@ -387,17 +302,7 @@
   inherits: false;
   initial-value: skewY(0);
 }
-@property --tw-space-y-reverse {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0;
-}
 @property --tw-border-style {
-  syntax: "*";
-  inherits: false;
-  initial-value: solid;
-}
-@property --tw-outline-style {
   syntax: "*";
   inherits: false;
   initial-value: solid;
@@ -435,42 +340,6 @@
   inherits: false;
 }
 @property --tw-sepia {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-blur {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-brightness {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-contrast {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-grayscale {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-hue-rotate {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-invert {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-opacity {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-saturate {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-sepia {
   syntax: "*";
   inherits: false;
 }
