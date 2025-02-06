@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progress Tugas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
+    
+    
+    <!-- Navbar -->
+    <%- include('../layout/navKepala') %>
+    <a href="/kepala/tugas" class="absolute left-10 top-[110px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+        <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
+        <span class="text-lg font-medium">Kembali</span>
+    </a>
+    
+    <!-- Kontainer Utama -->
+    <div class="flex justify-center items-start mt-[90px]">
+      
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-5 pb-5 shadow-lg w-[1400px]">
+            
+            <!-- Header -->
+            <h2 class="text-2xl font-bold text-[#C15E15] mb-4">Progress Tugas</h2>
+
+            <!-- Informasi Tugas -->
+            <div class="flex items-start">
+                <div class="w-1/2 pr-4 text-gray-600">
+                    <div class="flex">
+                        <span class="w-[140px] font-medium">Nama Tugas</span>
+                        <span class="mr-2">:</span> 
+                        <span class="font-light">Indikator Kinerja</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[140px] font-medium">Penugas</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">Medi Iswandi</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[140px] font-medium">Deskripsi</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">Membuat Faktor Pendorong dan Penghambat Indikator Kinerja</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[140px] font-medium">Jenis Tugas</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">Individu</span>
+                    </div>
+                </div>
+                <div class="border-l border-gray-400 h-full mx-4"></div>
+                <div class="w-1/2 pl-4 text-gray-600">
+                    <div class="flex">
+                        <span class="w-[130px] font-medium">Dokumen</span>
+                        <span class="mr-2">:</span>
+                        <a href="/files/laporan-q1.pdf" class="text-blue-500 underline">Download PDF</a>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[130px] font-medium">Created at</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">01/02/2025 (22.00)</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[130px] font-medium">Deadline</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">02/02/2025 (22.00)</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[130px] font-medium">Penerima Tugas</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">Rika Amir, SE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel -->
+            <div class="overflow-auto w-full mt-6">
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-[#C15E15] text-white">
+                            <th class="p-3 border text-center">No</th>
+                            <th class="p-3 border text-left">Rincian Tugas</th>
+                            <th class="p-3 border text-left">Penanggung Jawab</th>
+                            <th class="p-3 border text-left">Status</th>
+                            <th class="p-3 border text-left">Dokumen</th>
+                            <th class="p-3 border text-left">Catatan</th>
+                            <th class="p-3 border text-left">Feedback</th>
+                            <th class="p-3 border text-left">Keterangan</th>
+                            
+                        </tr>
+                    </thead>
+                    
+                    <tbody id="keteranganTableBody" class="text-gray-700"></tbody>
+                </table>
+            </div>
+            <div class="flex mt-1">
+                <span class="w-[250px] font-medium">Persentase Penyelesain Tugas</span>
+                <span class="mr-2">:</span>
+                <span class="font-light">50%</span>
+            </div>
+
+            <!-- Tombol Simpan -->
+            <div class="flex justify-end mt-4">
+                <button id="saveButton" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
+                    Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('../layout/footer') %>
+
+    <script>
+        const keteranganData = [
+            { no: 1, rincian: "Indikator Kinerja Utama", penanggungJawab: "Siddiq", status: "Belum Selesai", keterangan: "Belum Selesai", dokumen: "data.pdf", catatan: "Data lengkap", feedback: "" },
+            { no: 2, rincian: "Indikator Kinerja Daerah", penanggungJawab: "Rika Amir", status: "Selesai", keterangan: "Selesai", dokumen: "analisis.pdf", catatan: "Masih dihitung", feedback: "" },
+            { no: 3, rincian: "Indikator Kinerja Umum", penanggungJawab: "Rika Amir", status: "Selesai", keterangan: "Revisi", dokumen: "-", catatan: "-", feedback: "" },
+            { no: 4, rincian: "Indikator Kinerja Umum", penanggungJawab: "Rika Amir", status: "Belum Selesai", keterangan: "Belum Selesai", dokumen: "-", catatan: "-", feedback: "" }
+        ];
+
+        const keteranganTableBody = document.getElementById('keteranganTableBody');
+
+        function getKeteranganColor(keterangan) {
+            return keterangan === "Belum Selesai" ? "bg-red-500 text-white" :
+                   keterangan === "Selesai" ? "bg-green-500 text-white" :
+                   keterangan === "Revisi"? "bg-yellow-500 text-white" : "";
+        }
+
+        function updateKeteranganColor(selectElement) {
+            const selectedOption = selectElement.value;
+            selectElement.className = "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] " + getKeteranganColor(selectedOption);
+        }
+
+        keteranganData.forEach((item, index) => {
+            keteranganTableBody.innerHTML += `
+                <tr class="border">
+                    <td class="p-3 border text-center">${item.no}</td>
+                    <td class="p-3 border text-left">${item.rincian}</td>
+                    <td class="p-3 border text-left">${item.penanggungJawab}</td>
+                    <td class="p-3 border text-left">${item.status}</td>
+                    <td class="p-3 border text-left">${item.dokumen !== "-" ? `<a href="/files/${item.dokumen}" class="text-blue-500 underline">Lihat</a>` : "-"}</td>
+                    <td class="p-3 border text-left">${item.catatan}</td>
+                    <td class="p-3 border text-left">
+                        <textarea class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15]" rows="3" placeholder="Beri feedback">${item.feedback}</textarea>
+                    </td>
+                    <td class="p-3 border text-left">
+                        <select class="keteranganDropdown w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] ${getKeteranganColor(item.keterangan)}" 
+                            onchange="updateKeteranganColor(this)">
+                            <option value="Belum Selesai" ${item.keterangan === "Belum Selesai" ? "selected" : ""}>Belum Selesai</option>
+                            <option value="Selesai" ${item.keterangan === "Selesai" ? "selected" : ""}>Selesai</option>
+                            <option value="Revisi" ${item.keterangan === "Revisi" ? "selected" : ""}>Revisi</option>
+                        </select>
+                    </td>
+                    
+                </tr>
+            `;
+        });
+
+        document.getElementById("saveButton").addEventListener("click", function() {
+            Swal.fire({
+                icon: "success",
+                title: "Perubahan Disimpan",
+                text: "Progress tugas telah diperbarui.",
+                confirmButtonColor: "#C15E15"
+            });
+        });
+    </script>
+
+</body>
+</html>

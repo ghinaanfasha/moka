@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Daftar Tugas</title>
+    <title>Riwayat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
     <!-- Import SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* Dropdown Fix */
+        #dropdownMenu {
+            display: none; /* Default hidden */
+            position: absolute;
+            background: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            min-width: 150px;
+            z-index: 50; /* Supaya tidak tertutup elemen lain */
+        }
+    </style>
 </head>
 <body class="h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
     
@@ -18,7 +31,21 @@
     <div class="flex-grow justify-center items-start mt-[80px] ml-[20px]">
         <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1400px]">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-[#C15E15]">Penugasan</h2>
+                <h2 class="text-2xl font-bold text-[#C15E15]">Riwayat</h2>
+
+                <!-- Dropdown Pilih Tipe -->
+                <div class="relative">
+                    <button id="dropdownButton" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10] flex items-center relative">
+                        <span id="dropdownText">Tugas</span>
+                        <ion-icon name="chevron-down-outline" class="ml-2"></ion-icon>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg border border-gray-300 z-50">
+                        <button class="dropdown-item block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" data-type="Tugas">Tugas</button>
+                        <button class="dropdown-item block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" data-type="Penugasan">Penugasan</button>
+                    </div>
+                </div>
             </div>
             
             <!-- Tabel -->
@@ -32,10 +59,8 @@
                             <th class="p-3 border w-[30px]">Penugas</th>
                             <th class="p-3 border w-[80px]">Deadline</th>
                             <th class="p-3 border w-[80px]">Created at</th>
-                            <th class="p-3 border w-[50px]">Status</th> <!-- Memperluas kolom -->
                             <th class="p-3 border w-[80px]">Rincian Tugas</th>
                             <th class="p-3 border w-[20px]">Keterangan</th>
-                            <th class="p-3 border w-[20px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="taskTableBody" class="text-gray-700"></tbody>
@@ -45,9 +70,34 @@
     </div>
 
     <script>
-        const taskTableBody = document.getElementById('taskTableBody');
+        const dropdownButton = document.getElementById("dropdownButton");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        const dropdownText = document.getElementById("dropdownText");
+
+        // Toggle dropdown saat tombol diklik
+        dropdownButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+            dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+        });
+
+        // Pilihan dropdown
+        document.querySelectorAll(".dropdown-item").forEach(item => {
+            item.addEventListener("click", function () {
+                const selectedType = this.getAttribute("data-type");
+                dropdownText.textContent = selectedType;
+                dropdownMenu.style.display = "none";
+            });
+        });
+
+        // Tutup dropdown jika klik di luar
+        document.addEventListener("click", function (event) {
+            if (!dropdownButton.contains(event.target)) {
+                dropdownMenu.style.display = "none";
+            }
+        });
 
         // Contoh data tugas
+        const taskTableBody = document.getElementById("taskTableBody");
         const tasks = [
             {
                 id: 1,
@@ -61,8 +111,7 @@
                     { rincian: "Pengumpulan data", keterangan: "Diberikan" },
                     { rincian: "Analisis keuangan", keterangan: "Revisi" },
                     { rincian: "Penyusunan laporan", keterangan: "Selesai" }
-                ],
-                status: "Belum Dibaca"
+                ]
             },
             {
                 id: 2,
@@ -76,8 +125,7 @@
                     { rincian: "Survey lokasi", keterangan: "Selesai" },
                     { rincian: "Wawancara masyarakat", keterangan: "Selesai" },
                     { rincian: "Analisis data", keterangan: "Selesai" }
-                ],
-                status: "Sudah Dibaca"
+                ]
             }
         ];
 
@@ -102,46 +150,13 @@
                             <div class="text-sm">${task.createdAt.date}</div>
                         </td>
                     ` : ""}
-                    ${rincianIndex === 0 ? `
-                        <td class="p-3 border text-left w-40" rowspan="${task.rincianTugas.length}">
-                            <select class="p-2 rounded-md border border-gray-300 w-full text-white font-semibold" 
-                                style="background-color: ${task.status === 'Belum Dibaca' ? '#ef4444' : '#10b981'}"
-                                onchange="updateStatus(this, ${index})">
-                                <option value="Belum Dibaca" class="text-red-500" ${task.status === "Belum Dibaca" ? "selected" : ""}>Belum Dibaca</option>
-                                <option value="Sudah Dibaca" class="text-green-500" ${task.status === "Sudah Dibaca" ? "selected" : ""}>Sudah Dibaca</option>
-                            </select>
-                        </td>
-                    ` : ""}
                     <td class="p-3 border text-left">${rincian.rincian}</td>
                     <td class="p-3 border text-${rincian.keterangan === "Diberikan" ? "blue-500" : rincian.keterangan === "Revisi" ? "red-500" : "green-500"}">${rincian.keterangan}</td>
-                    ${rincianIndex === 0 ? `
-                        <td class="p-3 border text-left" rowspan="${task.rincianTugas.length}">
-                            <button id="updateButton${task.id}" onclick="updateTask(${task.id})"
-                                class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 ${task.rincianTugas.every(rt => rt.keterangan === 'Selesai') ? 'opacity-50 cursor-not-allowed' : ''}"
-                                ${task.rincianTugas.every(rt => rt.keterangan === 'Selesai') ? 'disabled' : ''}>
-                                Update
-                            </button>
-                        </td>
-                    ` : ""}
                 `;
 
                 taskTableBody.appendChild(row);
             });
         });
-
-        function updateStatus(selectElement, index) {
-            tasks[index].status = selectElement.value;
-            selectElement.style.backgroundColor = selectElement.value === "Belum Dibaca" ? "#ef4444" : "#10b981";
-            
-            // **Menampilkan modal sukses setelah status diperbarui**
-            Swal.fire({
-                icon: "success",
-                title: "Status Diperbarui",
-                text: `Status tugas telah diperbarui menjadi: ${tasks[index].status}`,
-                confirmButtonText: "OK",
-                confirmButtonColor: "#C15E15",
-            });
-        }
     </script>
 
     <!-- Footer -->
