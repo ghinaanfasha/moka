@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Progress Tugas</title>
+    <title>Detail Tugas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
     <!-- Import SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
+   
 </head>
 <body class="h-screen flex flex-col bg-cover bg-center pt-[60px] font-montserrat" style="background-image: url('/images/bg_moka.png');">
     
@@ -21,7 +21,7 @@
         <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1400px]">
             
             <!-- Header -->
-            <h2 class="text-2xl font-bold text-[#C15E15] mb-4">Progress Tugas</h2>
+            <h2 class="text-2xl font-bold text-[#C15E15] mb-4">Detail Tugas</h2>
 
             <!-- Informasi Tugas -->
             <div class="flex items-start">
@@ -42,6 +42,11 @@
                         <span class="mr-2">:</span>
                         <span class="font-light">Membuat Faktor Pendorong dan Penghambat Indikator Kinerja</span>
                     </div>
+                    <div class="flex mt-1">
+                        <span class="w-[140px] font-medium">Jenis Tugas</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">Individu</span>
+                    </div>
                 </div>
                 
                 <!-- Garis Pembatas -->
@@ -50,14 +55,24 @@
                 <!-- Informasi Tugas Kanan -->
                 <div class="w-1/2 pl-4 text-gray-600">
                     <div class="flex">
-                        <span class="w-[100px] font-medium">Dokumen</span>
+                        <span class="w-[120px] font-medium">Dokumen</span>
                         <span class="mr-2">:</span>
                         <a href="/files/laporan-q1.pdf" class="text-blue-500 underline">Download PDF</a>
                     </div>
                     <div class="flex mt-1">
-                        <span class="w-[100px] font-medium">Deadline</span>
+                        <span class="w-[120px] font-medium">Created At</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">01/02/2025 (22.00)</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[120px] font-medium">Deadline</span>
                         <span class="mr-2">:</span>
                         <span class="font-light">02/02/2025 (22.00)</span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[120px] font-medium">Penerima Tugas</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">Rika Amir</span>
                     </div>
                 </div>
             </div>
@@ -68,11 +83,13 @@
                     <thead>
                         <tr class="bg-[#C15E15] text-white">
                             <th class="p-3 border text-center">No</th>
-                            <th class="p-3 border text-center">Rincian Tugas</th>
-                            <th class="p-3 border text-center">Status</th>
-                            <th class="p-3 border text-center">Dokumen</th>
-                            <th class="p-3 border text-center">Catatan</th>
-                            <th class="p-3 border text-center">Feedback</th>
+                            <th class="p-3 border text-left">Rincian Tugas</th>
+                            <th class="p-3 border text-left">Penanggung Jawab</th>
+                            <th class="p-3 border text-left">Status</th>
+                            <th class="p-3 border text-left">Dokumen</th>
+                            <th class="p-3 border text-left">Catatan</th>
+                            <th class="p-3 border text-left">Feedback</th>
+                            <th class="p-3 border text-left">Keterangan</th>
                             <th class="p-3 border text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -89,10 +106,10 @@
         const progressTableBody = document.getElementById('progressTableBody');
 
         const progressData = [
-            { no: 1, rincian: "Indikator Kinerja Utama", status: "Diteruskan", dokumen: "data.pdf", catatan: "Data lengkap", feedback: "Baik" },
-            { no: 2, rincian: "Indikator Kinerja Daerah", status: "Selesai", dokumen: "analisis.pdf", catatan: "Masih dihitung", feedback: "-" },
-            { no: 3, rincian: "Indikator Kinerja Umum", status: "Revisi", dokumen: "-", catatan: "-", feedback: "-" },
-            { no: 4, rincian: "Membuat bahan presentasi rapat", status: "Diberikan", dokumen: "-", catatan: "-", feedback: "-" }
+            { no: 1, rincian: "Indikator Kinerja Utama", penanggungJawab: "Siddiq", status: "Diteruskan", dokumen: "data.pdf", catatan: "Data lengkap", feedback: "Baik", keterangan: "Diberikan" },
+            { no: 2, rincian: "Indikator Kinerja Daerah", penanggungJawab: "Rika Amir", status: "Selesai", dokumen: "analisis.pdf", catatan: "Masih dihitung", feedback: "-", keterangan: "Selesai" },
+            { no: 3, rincian: "Indikator Kinerja Umum", penanggungJawab: "Rika Amir", status: "Revisi", dokumen: "-", catatan: "-", feedback: "-", keterangan: "Revisi" },
+            { no: 4, rincian: "Membuat bahan presentasi rapat", penanggungJawab: "Rika Amir", status: "Diberikan", dokumen: "-", catatan: "-", feedback: "-", keterangan: "Diberikan" }
         ];
 
         progressData.forEach(item => {
@@ -103,22 +120,23 @@
 
             progressTableBody.innerHTML += `
                 <tr class="border">
-                    <td class="p-3 border w-12 text-center">${item.no}</td>
-                    <td class="p-3 border w-25 text-left">${item.rincian}</td>
-                    <td class="p-3 border w-10 text-left ${statusColor} ">${item.status}</td>
-                    <td class="p-3 border w-10 text-left">${item.dokumen !== "-" ? `<a href="/files/${item.dokumen}" class="text-blue-500 underline">Lihat</a>` : "-"}</td>
-                    <td class="p-3 border w-25 text-left">${item.catatan}</td>
-                    <td class="p-3 border w-25 text-left">${item.feedback}</td>
-                    <td class="p-3 w-15 flex justify-center space-x-2">
-                        <!-- Tombol Edit -->
-                        <a href="../admin/formEditTask/${item.no}" class="bg-green-500 p-2 rounded-full hover:bg-green-700 flex items-center justify-center">
-                            <ion-icon name="pencil-outline" class="text-white text-xl"></ion-icon>
-                        </a>
-
-                        <!-- Tombol Share -->
-                        <button class="bg-yellow-400 p-2 rounded-full hover:bg-yellow-500 flex items-center justify-center">
-                            <ion-icon name="person-add-outline" class="text-white text-xl"></ion-icon>
-                        </button>
+                    <td class="p-3 border text-center">${item.no}</td>
+                    <td class="p-3 border text-left">${item.rincian}</td>
+                    <td class="p-3 border text-left">${item.penanggungJawab}</td>
+                    <td class="p-3 border text-left ${statusColor}">${item.status}</td>
+                    <td class="p-3 border text-left">${item.dokumen !== "-" ? `<a href="/files/${item.dokumen}" class="text-blue-500 underline">Lihat</a>` : "-"}</td>
+                    <td class="p-3 border text-left">${item.catatan}</td>
+                    <td class="p-3 border text-left">${item.feedback}</td>
+                    <td class="p-3 border text-left">${item.keterangan}</td>
+                    <td class="p-3 border text-center">
+                        <div class="flex justify-center space-x-3">
+                            <a href="../admin/formEditTask/${item.no}" class="bg-green-500 p-2 rounded-full hover:bg-green-700 flex items-center justify-center">
+                                <ion-icon name="pencil-outline" class="text-white text-xl"></ion-icon>
+                            </a>
+                            <button class="bg-yellow-400 p-2 rounded-full hover:bg-yellow-500 flex items-center justify-center">
+                                <ion-icon name="person-add-outline" class="text-white text-xl"></ion-icon>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;

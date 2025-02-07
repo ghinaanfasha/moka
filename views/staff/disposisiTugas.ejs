@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disposisi Tugas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
+    <!-- Import SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
+</head>
+<body class="h-screen flex flex-col bg-cover bg-center pt-[60px] font-montserrat" style="background-image: url('/images/bg_moka.png');">
+    
+    <!-- Navbar -->
+    <%- include('../layout/navStaf') %>
+
+    <!-- Kontainer Utama -->
+    <div class="flex-grow justify-center items-start mt-[50px]">
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1400px]">
+            
+            <!-- Header -->
+            <h2 class="text-2xl font-bold text-[#C15E15] mb-4">Disposisi Tugas</h2>
+
+            <!-- Rincian Tugas -->
+            <div class="mb-6">
+                <h3 class="text-lg text-gray-700 mb-2">Rincian Tugas: Indikator Kinerja Utama</h3>
+                
+            </div>
+
+            <!-- Pilih Staff -->
+            <div class="mb-6">
+                <label for="staffSelect" class="text-gray-700 font-medium">Pilih Staff:</label>
+                <select id="staffSelect" class="mt-2 w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C15E15]">
+                    <option value="" disabled selected>Pilih staff yang akan menerima tugas</option>
+                    <option value="staff1">Rika Amir</option>
+                    <option value="staff2">Andi Pratama</option>
+                    <option value="staff3">Siti Aisyah</option>
+                </select>
+            </div>
+
+            <!-- Tombol Bagikan -->
+            <div class="flex justify-end">
+                <button id="shareButton" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10]">
+                    Bagikan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('../layout/footer') %>
+
+    <script>
+        document.getElementById("shareButton").addEventListener("click", function() {
+            const selectedStaff = document.getElementById("staffSelect").value;
+            if (!selectedStaff) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Pilih Staff!",
+                    text: "Silakan pilih staff yang akan menerima tugas sebelum membagikannya.",
+                    confirmButtonColor: "#C15E15"
+                });
+            } else {
+                Swal.fire({
+                    icon: "success",
+                    title: "Tugas Dibagikan!",
+                    text: "Tugas berhasil dibagikan kepada " + document.getElementById("staffSelect").selectedOptions[0].text + ".",
+                    confirmButtonColor: "#C15E15"
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
