@@ -4,8 +4,8 @@
 .collapse {
   visibility: collapse;
 /*! tailwindcss v4.0.3 | MIT License | https://tailwindcss.com */
-.pointer-events-none {
-  pointer-events: none;
+.collapse {
+  visibility: collapse;
 }
 .absolute {
   position: absolute;
@@ -21,6 +21,12 @@
 }
 .top-1\/2 {
   top: calc(1/2 * 100%);
+}
+.top-\[-5px\] {
+  top: -5px;
+}
+.top-\[-20px\] {
+  top: -20px;
 }
 .top-\[-0px\] {
   top: -0px;
@@ -94,6 +100,9 @@
 .z-50 {
   z-index: 50;
 }
+.mt-\[30px\] {
+  margin-top: 30px;
+}
 .container {
   width: 100%;
 }
@@ -141,6 +150,12 @@
 }
 .mt-auto {
   margin-top: auto;
+}
+.ml-\[0px\] {
+  margin-left: 0px;
+}
+.ml-\[10px\] {
+  margin-left: 10px;
 }
 .ml-\[20px\] {
   margin-left: 20px;
@@ -243,6 +258,9 @@
 }
 .w-\[1229px\] {
   width: 1229px;
+}
+.w-\[1300px\] {
+  width: 1300px;
 }
 .w-\[1400px\] {
   width: 1400px;
@@ -397,8 +415,14 @@
 .text-left {
   text-align: left;
 }
+.text-right {
+  text-align: right;
+}
 .text-\[\#C15E15\] {
   color: #C15E15;
+}
+.opacity-80 {
+  opacity: 80%;
 }
 .underline {
   text-decoration-line: underline;

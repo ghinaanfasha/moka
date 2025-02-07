@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"nodemon ./bin/www\" \"npx tailwindcss -i ./public/stylesheets/input.css -o ./public/stylesheets/output.css --watch\""
-},
+  },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.0",
     "autoprefixer": "^10.4.20",

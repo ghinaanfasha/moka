@@ -13,6 +13,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      assigneeID: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       taskName: {
         type: Sequelize.STRING
       },
@@ -23,6 +27,13 @@ module.exports = {
         type: Sequelize.STRING
       },
       deadline: {
+        type: Sequelize.DATE
+      },
+      readStatus: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      readAt: {
         type: Sequelize.DATE
       },
       status: {
@@ -42,7 +53,19 @@ module.exports = {
     await queryInterface.addConstraint('tasks', {
       fields: ['assignorID'],
       type: 'foreign key',
-      name: 'fk_tasks_users',
+      name: 'fk_tasks_assignor',
+      references: {
+        table: 'users',
+        field: 'userID'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    });
+
+    await queryInterface.addConstraint('tasks', {
+      fields: ['assigneeID'],
+      type: 'foreign key',
+      name: 'fk_tasks_assignee',
       references: {
         table: 'users',
         field: 'userID'
@@ -53,7 +76,8 @@ module.exports = {
 
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeConstraint('tasks', 'fk_tasks_users');
+    await queryInterface.removeConstraint('tasks', 'fk_tasks_assignor');
+    await queryInterface.removeConstraint('tasks', 'fk_tasks_assignee');
     await queryInterface.dropTable('tasks');
   }
 };

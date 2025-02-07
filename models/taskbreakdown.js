@@ -7,11 +7,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'taskID',
         as: 'task'
       });
-
-      TaskBreakdown.belongsTo(models.User, {
-        foreignKey: 'userID',
-        as: 'user'
-      });
     }
   }
   TaskBreakdown.init({
@@ -24,13 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    assigneeID: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     taskBreakdown: DataTypes.TEXT,
-    readStatus: DataTypes.BOOLEAN,
-    readAt: DataTypes.DATE,
     submitTask: DataTypes.STRING,
     submitTime: DataTypes.DATE,
     breakdownStatus: DataTypes.STRING,
