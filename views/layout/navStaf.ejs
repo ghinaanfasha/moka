@@ -1,0 +1,72 @@
+<!-- Navbar -->
+<div class="fixed top-0 left-0 w-full bg-[#C15E15] shadow-md p-4 flex justify-between items-center z-40">
+    <!-- Logo dan Moka -->
+    <div class="flex items-center space-x-4">
+        <img src="/images/logo_sumbar.png" alt="Logo Sumbar" class="w-12 h-12" />
+        <span class="text-lg font-bold text-white">MOKA</span>
+    </div>
+    
+    <!-- Profil -->
+    <div class="flex items-center space-x-2 relative">
+        <div class="text-right">
+            <span class="block text-md font-medium text-white">Rika Amir, SE</span>
+            <span class="block text-sm text-white opacity-80">Staff</span>
+        </div>
+        <button id="profileButton" class="focus:outline-none relative z-50">
+            <div class="w-10 h-10 rounded-full overflow-hidden">
+                <img src="/images/foto_profil.png" alt="Foto Profil" class="w-full h-full object-cover" />
+            </div>
+        </button>
+    </div>
+</div>
+
+<!-- Floating Navigation Menu -->
+<nav class="fixed top-[65px] left-0 w-full z-40 bg-cover bg-center" style="background-image: url('/images/bg_moka.png');">
+    <div class="flex justify-center space-x-10 py-3">
+        <a href="/staff/dashboard" class="nav-link">Dashboard</a>
+        <a href="/staff/tugas" class="nav-link">Tugas</a>
+        <a href="/staff/daftarTugas" class="nav-link">Penugasan</a>
+        <a href="/staff/riwayat" class="nav-link">Riwayat</a>
+    </div>
+</nav>
+
+<!-- Dropdown Profil -->
+<div id="profileMenu" class="hidden absolute right-4 top-[70px] w-48 bg-white shadow-lg rounded-lg overflow-hidden z-50">
+    <a href="profil" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 2a6 6 0 00-4.472 10.017L4 16h12l-1.528-3.983A6 6 0 0010 2z" />
+        </svg>
+        Profil
+    </a>
+    <a href="#" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 17L21 12 16 7V10H8V14H16V17Z" />
+        </svg>
+        Logout
+    </a>
+</div>
+
+<script>
+    document.getElementById('profileButton').addEventListener('click', function() {
+        const menu = document.getElementById('profileMenu');
+        menu.classList.toggle('hidden');
+    });
+
+    function setActiveNav() {
+        const path = window.location.pathname; // Ambil URL halaman saat ini
+        const navLinks = document.querySelectorAll('.nav-link'); // Ambil semua link navbar
+
+        navLinks.forEach(link => {
+            link.classList.remove("text-[#C15E15]", "font-bold", "border-b-2", "border-[#C15E15]");
+            link.classList.add("text-gray-700", "hover:text-[#C15E15]", "font-medium");
+
+            // Jika href cocok dengan path saat ini, beri highlight
+            if (link.getAttribute('href') === path) {
+                link.classList.remove("text-gray-700", "hover:text-[#C15E15]", "font-medium");
+                link.classList.add("text-[#C15E15]", "font-bold", "border-b-2", "border-[#C15E15]");
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", setActiveNav);
+</script>
