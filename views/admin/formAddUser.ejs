@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@heroicons/react/solid"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
 
@@ -15,14 +17,14 @@
 
     <!-- Kontainer Form -->
     <div class="relative w-full flex flex-grow justify-center items-center mt-14">
-        <a href="/admin/dashboard" class="absolute left-10 top-[-30px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+        <a href="/addUser" class="absolute left-10 top-[-20px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
             <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
             <span class="text-lg font-medium">Kembali</span>
         </a>
-        <div class="bg-white bg-opacity-90 rounded-[10px] p-16 shadow-lg w-[1400px]">
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-10 shadow-lg w-[1400px]">
             <h2 class="text-2xl font-bold text-[#C15E15] mb-6 text-left">Tambah Pengguna</h2>
 
-            <form action="/admin/addUser" method="POST" class="space-y-6">
+            <form id="addUserForm" class="space-y-6">
                 <div class="grid grid-cols-2 gap-10 relative">
                     <!-- Garis Pembatas Tengah -->
                     <div class="absolute inset-y-0 left-1/2 w-0.5 bg-gray-300"></div>
@@ -31,26 +33,25 @@
                     <div class="space-y-6">
                         <div>
                             <label class="block text-gray-700 font-medium">Username</label>
-                            <input type="text" name="username" required placeholder="Masukkan Username" class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            <input type="text" id="username" name="username" required placeholder="Masukkan Username" autocomplete="off"
+                                class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium">Jabatan</label>
-                            <select name="jabatan" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            <select name="jabatan" id="jabatan" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
                                 <option value="" disabled selected>Pilih Jabatan</option>
-                                <option value="Kepala Bappeda">Kepala BAPPEDA</option>
-                                <option value="Kabid">Kepala Bidang</option>
-                                <option value="Staff">Staff</option>
-                                <option value="Admin">Admin</option>
+                                <% roles.forEach(function(role) { %>
+                                    <option value="<%= role.roleName %>"><%= role.roleName %></option>
+                                <% }); %>
                             </select>
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium">Bidang</label>
-                            <select name="bidang" required class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                            <select name="bidang" id="bidang" class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
                                 <option value="" disabled selected>Pilih Bidang</option>
-                                <option value="P2EPD">P2EPD</option>
-                                <option value="Infraswil">Infrastruktur dan Kewilayahan</option>
-                                <option value="EKOSDA">EKO SDA</option>
-                                <option value="Umum">Umum</option>
+                                <% departments.forEach(function(dept) { %>
+                                    <option value="<%= dept.deptName %>"><%= dept.deptName %></option>
+                                <% }); %>
                             </select>
                         </div>
                     </div>
@@ -59,22 +60,26 @@
                     <div class="space-y-6">
                         <div class="relative">
                             <label class="block text-gray-700 font-medium">Password</label>
-                            <input type="password" id="password" name="password" required placeholder="Masukkan Password" 
-                                class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
-                            
-                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-4 flex items-center text-gray-500">
-                                <ion-icon id="eyeIcon" name="eye-off-outline" class="h-6 w-6"></ion-icon>
-                            </button>
+                            <div class="relative">
+                                <input type="password" id="password" name="password" required placeholder="Masukkan Password"
+                                    class="w-full p-4 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                                
+                                <button type="button" id="togglePassword" class="absolute inset-y-0 right-4 flex items-center justify-center h-full">
+                                    <ion-icon id="eyeIcon" name="eye-off-outline" class="h-6 w-6"></ion-icon>
+                                </button>
+                            </div>
                         </div>
-                        
+
                         <div class="relative">
-                            <label class="block text-gray-700 font-medium">Konfirmasi Password</label>
-                            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Ulangi Password" 
-                                class="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
-                            
-                            <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-4 flex items-center text-gray-500">
-                                <ion-icon id="eyeIconConfirm" name="eye-off-outline" class="h-6 w-6"></ion-icon>
-                            </button>
+                            <label class="block text-gray-700 font-medium">Konformasi Password</label>
+                            <div class="relative">
+                                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Ulangi Password"
+                                    class="w-full p-4 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C15E15] focus:border-[#C15E15]">
+                                
+                                <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-4 flex items-center justify-center h-full">
+                                    <ion-icon id="eyeIconConfirm" name="eye-off-outline" class="h-6 w-6"></ion-icon>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -111,6 +116,55 @@
         });
         document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
             toggleVisibility('confirmPassword', 'eyeIconConfirm');
+        });
+
+        document.getElementById('addUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                jabatan: document.getElementById('jabatan').value,
+                bidang: document.getElementById('bidang').value
+            };
+
+            try {
+                const response = await fetch('/admin/addUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: result.message,
+                        confirmButtonColor: '#3085d6'
+                    });
+                    window.location.href = '/addUser';
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: result.message,
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan pada sistem',
+                    confirmButtonColor: '#d33'
+                });
+            }
         });
     </script>
 

@@ -13,19 +13,8 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      assigneeID: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
       taskBreakdown: {
         type: Sequelize.TEXT
-      },
-      readStatus: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
-      readAt: {
-        type: Sequelize.DATE
       },
       submitTask: {
         type: Sequelize.STRING
@@ -65,21 +54,9 @@ module.exports = {
       onDelete: 'CASCADE'
     });
 
-    await queryInterface.addConstraint('taskBreakdowns', {
-      fields: ['assigneeID'],
-      type: 'foreign key',
-      name: 'fk_taskBreakdowns_users',
-      references: {
-        table: 'users',
-        field: 'userID'
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
-    });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint('taskBreakdowns', 'fk_taskBreakdowns_tasks');
-    await queryInterface.removeConstraint('taskBreakdowns', 'fk_taskBreakdowns_users');
     await queryInterface.dropTable('taskBreakdowns');
   }
 };
