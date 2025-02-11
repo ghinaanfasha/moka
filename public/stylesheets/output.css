@@ -1,6 +1,9 @@
 /*! tailwindcss v4.0.0 | MIT License | https://tailwindcss.com */
 @tailwind base;
 @tailwind components;
+.collapse {
+  visibility: collapse;
+/*! tailwindcss v4.0.3 | MIT License | https://tailwindcss.com */
 .absolute {
   position: absolute;
 }
@@ -15,6 +18,18 @@
 }
 .top-1\/2 {
   top: calc(1/2 * 100%);
+}
+.top-\[-5px\] {
+  top: -5px;
+}
+.top-\[-20px\] {
+  top: -20px;
+}
+.top-\[-0px\] {
+  top: -0px;
+}
+.top-\[-40px\] {
+  top: -40px;
 }
 .top-\[-4px\] {
   top: -4px;
@@ -45,6 +60,9 @@
 }
 .z-50 {
   z-index: 50;
+}
+.mt-\[30px\] {
+  margin-top: 30px;
 }
 .container {
   width: 100%;
@@ -261,14 +279,14 @@
 .text-\[\#C15E15\] {
   color: #C15E15;
 }
+.opacity-80 {
+  opacity: 80%;
+}
 .underline {
   text-decoration-line: underline;
 }
 .opacity-50 {
   opacity: 50%;
-}
-.opacity-80 {
-  opacity: 80%;
 }
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);

@@ -1,3 +1,5 @@
+<!-- addUser.ejs -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,17 +12,17 @@
     <!-- Import SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
+<body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
     
     <!-- Navbar -->
     <%- include('../layout/navAdmin') %>
     
     <!-- Kontainer Utama -->
-    <div class="flex justify-center items-start mt-[50px] ml-[20px]">
+    <div class="flex-grow flex justify-center items-start mt-[30px] ">
         <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-[#C15E15]">Pengguna</h2>
-                <a href="/admin/addUser" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10]">Tambah Pengguna</a>
+                <a href="/formAddUser" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10]">Tambah Pengguna</a>
             </div>
             
             <!-- Tabel -->
@@ -29,7 +31,6 @@
                     <thead>
                         <tr class="bg-[#C15E15] text-white">
                             <th class="p-3 border">No</th>
-                            <th class="p-3 border">Nama</th>
                             <th class="p-3 border">Username</th>
                             <th class="p-3 border">Jabatan</th>
                             <th class="p-3 border">Bidang</th>
@@ -37,44 +38,37 @@
                         </tr>
                     </thead>
                     <tbody id="userTableBody" class="text-gray-700">
-                        <script>
-                            const userTableBody = document.getElementById('userTableBody');
-                            const users = Array.from({ length: 10 }, (_, i) => ({
-                                id: i + 1,
-                                no: i + 1,
-                                nama: `User ${i + 1}`,
-                                username: `user${i + 1}`,
-                                jabatan: `Jabatan ${i + 1}`,
-                                bidang: `Bidang ${i + 1}`
-                            }));
-
-                            users.forEach(user => {
-                                userTableBody.innerHTML += `
-                                    <tr class="border">
-                                        <td class="p-3 border">${user.no}</td>
-                                        <td class="p-3 border">${user.nama}</td>
-                                        <td class="p-3 border">${user.username}</td>
-                                        <td class="p-3 border">${user.jabatan}</td>
-                                        <td class="p-3 border">${user.bidang}</td>
-                                        <td class="p-3 border flex justify-center space-x-2">
-                                            <!-- Tombol Edit -->
-                                            <a href="../admin/formEditUser/${user.id}" class="bg-green-500 p-2 rounded-full hover:bg-green-700">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M4 21v-4l14-14 4 4-14 14H4zm2-2h2l11-11-2-2-11 11v2z"/>
-                                                </svg>
-                                            </a>
-                                            
-                                            <!-- Tombol Hapus -->
-                                            <button onclick="openDeleteModal(${user.id})" class="bg-red-500 p-2 rounded-full hover:bg-red-700">
+                        <% if (users && users.length > 0) { %>
+                            <% users.forEach((user, index) => { %>
+                                <tr class="border">
+                                    <td class="p-3 border"><%= index + 1 %></td>
+                                    <td class="p-3 border"><%= user.username %></td>
+                                    <td class="p-3 border"><%= user.jabatan %></td>
+                                    <td class="p-3 border"><%= user.bidang %></td>
+                                    <td class="p-3 border flex justify-center space-x-2">
+                                        <!-- Tombol Edit -->
+                                        <a href="/admin/formEditUser/<%= user.id %>" class="bg-green-500 p-2 rounded-full hover:bg-green-700">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M4 21v-4l14-14 4 4-14 14H4zm2-2h2l11-11-2-2-11 11v2z"/>
+                                            </svg>
+                                        </a>
+                                        
+                                        <!-- Tombol Hapus -->
+                                        <% if (user.jabatan !== 'admin') { %>
+                                            <button onclick="openDeleteModal('<%= user.id %>')" class="bg-red-500 p-2 rounded-full hover:bg-red-700">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
                                                     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                                 </svg>
                                             </button>
-                                        </td>
-                                    </tr>
-                                `;
-                            });
-                        </script>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" class="p-3 border">Tidak ada data pengguna.</td>
+                            </tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
@@ -84,7 +78,6 @@
     <!-- Footer -->
     <%- include('../layout/footer') %>
 
-    <!-- Script untuk Pop-Up Konfirmasi Hapus -->
     <script>
         function openDeleteModal(userId) {
             Swal.fire({
@@ -101,15 +94,56 @@
                     title: "text-red-600 font-semibold",
                     confirmButton: "bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700",
                     cancelButton: "bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
-                }
+                },
+                showLoaderOnConfirm: true,
+                preConfirm: async () => {
+                    try {
+                        const response = await fetch(`/admin/deleteUser/${userId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        });
+    
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || 'Gagal menghapus pengguna');
+                        }
+    
+                        const data = await response.json();
+                        if (!data.success) {
+                            throw new Error(data.message || 'Gagal menghapus pengguna');
+                        }
+    
+                        return data;
+                    } catch (error) {
+                        console.error('Delete error:', error);
+                        Swal.showValidationMessage(`Request failed: ${error.message}`);
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Redirect ke halaman delete
-                    window.location.href = "/admin/deleteUser/" + userId;
+                    Swal.fire({
+                        title: "Berhasil!",
+                        text: "Pengguna berhasil dihapus",
+                        icon: "success",
+                        confirmButtonColor: "#C15E15"
+                    }).then(() => {
+                        window.location.reload();
+                    });
                 }
+            }).catch((error) => {
+                console.error('SweetAlert error:', error);
+                Swal.fire({
+                    title: "Error!",
+                    text: error.message || "Terjadi kesalahan saat menghapus pengguna",
+                    icon: "error",
+                    confirmButtonColor: "#d33"
+                });
             });
         }
     </script>
-
 </body>
 </html>
