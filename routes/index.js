@@ -5,6 +5,12 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+router.get('/dashboardStaf', (req, res) => {
+  res.render('staff/dashboard'); 
+});
+router.get('/dashboard', (req, res) => {
+  res.render('kepala/dashboard'); 
+});
 router.get('/formAddTugasStaf', (req, res) => {
   res.render('staff/formAddTugasStaf'); 
 });
