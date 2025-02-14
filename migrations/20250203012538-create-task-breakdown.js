@@ -13,18 +13,33 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      assigneeID: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       taskBreakdown: {
         type: Sequelize.TEXT
+      },
+      breakdownStatus: {
+        type: Sequelize.STRING,
+        defaultValue: "Belum selesai"
+      },
+      taskStatus: {
+        type: Sequelize.STRING,
+        defaultValue: "Diberikan"
+      },
+      readStatus: {
+        type: Sequelize.STRING,
+        defaultValue: "Belum dibaca"
+      },
+      readAt: {
+        type: Sequelize.DATE
       },
       submitTask: {
         type: Sequelize.STRING
       },
       submitTime: {
         type: Sequelize.DATE
-      },
-      breakdownStatus: {
-        type: Sequelize.STRING,
-        defaultValue: "Belum dikerjakan"
       },
       taskNote: {
         type: Sequelize.TEXT
@@ -34,11 +49,13 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')  
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')  
       }
     });
 
@@ -54,9 +71,22 @@ module.exports = {
       onDelete: 'CASCADE'
     });
 
+    await queryInterface.addConstraint('taskBreakdowns', {
+      fields: ['assigneeID'],
+      type: 'foreign key',
+      name: 'fk_taskBreakdowns_assignee',
+      references: {
+        table: 'users',
+        field: 'userID'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    });
+
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint('taskBreakdowns', 'fk_taskBreakdowns_tasks');
+    await queryInterface.removeConstraint('taskBreakdowns', 'fk_taskBreakdowns_assignee');
     await queryInterface.dropTable('taskBreakdowns');
   }
 };

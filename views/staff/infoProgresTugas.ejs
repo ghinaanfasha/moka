@@ -1,4 +1,3 @@
-<!-- views/kepala/infoProgresTugas.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,8 +11,8 @@
 <body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
     
     <!-- Navbar -->
-    <%- include('../layout/navKepala') %>
-    <a href="/kepala/tugas" class="absolute left-10 top-[110px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+    <%- include('../layout/navStaf') %>
+    <a href="/staff/tugas" class="absolute left-10 top-[110px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
         <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
         <span class="text-lg font-medium">Kembali</span>
     </a>
@@ -230,7 +229,7 @@
                 saveButton.disabled = true;
 
                 // Kirim request ke backend
-                const response = await fetch('/kepala/updateTaskProgress', {
+                const response = await fetch('/staff/updateTaskProgress', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

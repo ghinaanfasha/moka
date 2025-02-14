@@ -22,9 +22,13 @@ const profileController = {
                     backLink = '/kepala/dashboard';
                     navTemplate = './layout/navKepala';
                     break;
+                case 'kepala bidang':
+                    backLink = '/staff/dashboard';
+                    navTemplate = './layout/navStaf';
+                    break;
                 case 'staff':
-                    backLink = '/staff/dashboardStaff';
-                    navTemplate = './layout/navStaff';
+                    backLink = '/staff/dashboard';
+                    navTemplate = './layout/navStaf';
                     break;
                 default:
                     backLink = '/';

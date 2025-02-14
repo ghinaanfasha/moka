@@ -7,32 +7,35 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      assigneeID: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
       nd_assigneeID: {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      breakdownStatus: {
+        type: Sequelize.STRING,
+        defaultValue: "Belum selesai"
+      },
       readStatus: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        defaultValue: "Belum dibaca"
       },
       readAt: {
         type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')  
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')  
       }
     });
 
     await queryInterface.addConstraint('taskDispositions', {
-      fields: ['taskBreakdownID', 'assigneeID'],
+      fields: ['taskBreakdownID', 'nd_assigneeID'],
       type: 'primary key',
       name: 'pk_taskDispositions'
     });
@@ -44,18 +47,6 @@ module.exports = {
       references: {
         table: 'taskBreakdowns',
         field: 'taskBreakdownID'
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
-    });
-
-    await queryInterface.addConstraint('taskDispositions', {
-      fields: ['assigneeID'],
-      type: 'foreign key',
-      name: 'fk_taskDispositions_assignee',
-      references: {
-        table: 'users',
-        field: 'userID'
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
@@ -75,7 +66,6 @@ module.exports = {
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.removeConstraint('taskDispositions', 'fk_taskDispositions_taskBreakdowns');
-    await queryInterface.removeConstraint('taskDispositions', 'fk_taskDispositions_assignee');
     await queryInterface.removeConstraint('taskDispositions', 'fk_taskDispositions_ndassignee');
     await queryInterface.dropTable('taskDispositions');
   }

@@ -11,11 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       TaskDisposition.belongsTo(models.User, {
-        foreignKey: 'assigneeID',
-        as: 'assignee'
-      });
-
-      TaskDisposition.belongsTo(models.User, {
         foreignKey: 'nd_assigneeID',
         as: 'ndAssignee'
       });
@@ -23,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   TaskDisposition.init({
     taskBreakdownID: DataTypes.INTEGER,
-    assigneeID: DataTypes.INTEGER,
     nd_assigneeID: DataTypes.INTEGER,
+    breakdownStatus: DataTypes.STRING,
     readStatus: DataTypes.STRING,
     readAt: DataTypes.DATE
   }, {

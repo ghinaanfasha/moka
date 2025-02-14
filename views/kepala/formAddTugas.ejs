@@ -4,355 +4,132 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tambah Tugas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@heroicons/react/solid"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
-    <style>
-        #dropdownMenu {
-            z-index: 50;
-        }
-    </style>
 </head>
 <body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
-
     <!-- Navbar -->
     <%- include('../layout/navKepala') %>
-
-    <!-- Kontainer Form Pertama -->
     
-    <div class="relative w-full flex flex-grow justify-center items-center mt-14" id="firstContainer">
-        <a href="/kepala/tugas" class="absolute left-10 top-[-4px] flex items-center text-[#C15E15] hover:text-[#A14B10] z-50">
-            <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon><span class="text-lg font-medium">Kembali</span>
-        </a>
-        
-        <div class="bg-white bg-opacity-90 rounded-[10px] p-16 shadow-lg w-[1400px] relative mb-2">
-            <div class="flex justify-between items-center mb-6 relative">
-                <h2 class="text-2xl font-bold text-[#C15E15]">Form Tambah Tugas</h2>
+    <!-- Back Button -->
+    <a href="/kepala/tugas" class="absolute left-10 top-[110px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+        <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
+        <span class="text-lg font-medium">Kembali</span>
+    </a>
 
-                <!-- Dropdown Pilih Tipe -->
-                <div class="relative">
-                    <button id="dropdownButton" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10] flex items-center relative z-50">
-                        <span id="dropdownText">Individu</span>
-                        <ion-icon name="chevron-down-outline" class="ml-2"></ion-icon>
-                    </button>
+    <!-- Main Form Container -->
+    <form id="taskForm" class="flex flex-col space-y-6" action="/kepala/add-task" method="POST" enctype="multipart/form-data">
+        <!-- First Step - Basic Task Info -->
+        <div class="flex justify-center items-start mt-[90px]" id="firstContainer">
+            <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-[#C15E15]">Form Tambah Tugas</h2>
+                </div>
 
-                    <!-- Dropdown Menu -->
-                    <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg border border-gray-300 z-50">
-                        <button class="dropdown-item block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" data-type="Individu">Individu</button>
-                        <button class="dropdown-item block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" data-type="Kelompok">Kelompok</button>
+                <div class="grid grid-cols-2 gap-10 relative">
+                    <div class="absolute inset-y-0 left-1/2 w-0.5 bg-gray-300"></div>
+                    
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nama Tugas <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_tugas" required
+                                placeholder="Masukkan Nama Tugas" 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Pilih Staff <span class="text-red-500">*</span></label>
+                            <select name="staff" multiple required 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tanggal & Jam Pengumpulan <span class="text-red-500">*</span></label>
+                            <div class="flex space-x-4">
+                                <input type="date" name="tanggal_pengumpulan" required 
+                                    class="w-1/2 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                                <input type="time" name="jam_pengumpulan" required 
+                                    class="w-1/2 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                            </div>
+                        </div>
                     </div>
+                    
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Deskripsi Tugas <span class="text-red-500">*</span></label>
+                            <textarea name="deskripsi" rows="4" required 
+                                placeholder="Masukkan deskripsi tugas..." 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Upload Dokumen</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="file" name="dokumen" 
+                                    class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">Format yang didukung: PDF, Word, Excel, PowerPoint</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Next Button -->
+                <div class="flex justify-end mt-6">
+                    <button type="button" id="nextButton" 
+                        class="px-6 py-3 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10] transition-colors duration-200">
+                        Selanjutnya
+                    </button>
                 </div>
             </div>
-
-            <form id="taskForm" class="space-y-6">
-                <div id="formIndividu" class="space-y-6">
-                    <div class="grid grid-cols-2 gap-10 relative">
-                        <div class="absolute inset-y-0 left-1/2 w-0.5 bg-gray-300"></div>
-                        <!-- Kiri -->
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-gray-700 font-medium">Nama Tugas <span class="text-red-500">*</span></label>
-                                <input type="text" name="nama_tugas" required autofocus placeholder="Masukkan Nama Tugas" class="w-full p-4 border border-gray-300 rounded-md">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium">Pilih Staff <span class="text-red-500">*</span></label>
-                                <select name="staff" required class="w-full p-4 border border-gray-300 rounded-md">
-                                    <option value="" disabled selected>Pilih Staff</option>
-                                    <option value="Staff A">Staff A</option>
-                                    <option value="Staff B">Staff B</option>
-                                    <option value="Staff C">Staff C</option>
-                                    <option value="Staff D">Staff D</option>
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-gray-700 font-medium">Tanggal & Jam Pengumpulan <span class="text-red-500">*</span></label>
-                                    <div class="flex space-x-4">
-                                        <input type="date" name="tanggal_pengumpulan" required class="w-1/2 p-4 border border-gray-300 rounded-md">
-                                        <input type="time" name="jam_pengumpulan" required class="w-1/2 p-4 border border-gray-300 rounded-md">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Kanan -->
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-gray-700 font-medium">Deskripsi Tugas</label>
-                                <textarea name="deskripsi" rows="4" required placeholder="Masukkan deskripsi tugas..." class="w-full p-4 border border-gray-300 rounded-md"></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-medium">Upload Dokumen</label>
-                                <input type="file" name="dokumen" required class="w-full p-4 border border-gray-300 rounded-md">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Kontainer Kelompok -->
-                <div id="formKelompok" class="hidden space-y-6">
-                    <div>
-                        <label class="block text-gray-700 font-medium">Nama Tugas</label>
-                        <input type="text" name="nama_tugas_kelompok" required placeholder="Masukkan Nama Tugas" class="w-full p-4 border border-gray-300 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium">Deskripsi Tugas</label>
-                        <textarea name="deskripsi_kelompok" rows="4" required placeholder="Masukkan deskripsi tugas..." class="w-full p-4 border border-gray-300 rounded-md"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium">Upload Dokumen</label>
-                        <input type="file" name="dokumen" required class="w-full p-4 border border-gray-300 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium">Tambah Staff</label>
-                        <div class="flex items-center">
-                            <input type="text" id="searchStaff" placeholder="Cari Staff..." class="w-full p-3 border border-gray-300 rounded-md">
-                            <button type="button" id="addStaff" class="ml-2 p-3 bg-green-500 text-white rounded-md">
-                                <ion-icon name="add-outline"></ion-icon>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-gray-700 font-medium">Tanggal & Jam Pengumpulan <span class="text-red-500">*</span></label>
-                            <div class="flex space-x-4">
-                                <input type="date" name="tanggal_pengumpulan" required class="w-1/2 p-4 border border-gray-300 rounded-md">
-                                <input type="time" name="jam_pengumpulan" required class="w-1/2 p-4 border border-gray-300 rounded-md">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tombol Selanjutnya -->
-                <div class="flex justify-end mt-6">
-                    <button type="button" id="nextButton" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700">Selanjutnya</button>
-                </div>
-            </form>
         </div>
-    </div>
 
-    <!-- Kontainer Form Kedua (Hidden) -->
-<div class="relative w-full flex flex-grow justify-center items-center mt-4 hidden" id="secondContainer">
-    <div class="bg-white bg-opacity-90 rounded-[10px] p-16 shadow-lg w-[1400px] relative">
-        <h2 class="text-2xl font-bold text-[#C15E15] mb-6">Rincian Tugas</h2>
+        <!-- Second Step - Task Breakdown -->
+        <div class="flex justify-center items-start mt-4 hidden" id="secondContainer">
+            <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-[#C15E15]">Rincian Tugas</h2>
+                </div>
 
-        <!-- Untuk Individu -->
-        <div id="rincianIndividuContainer" class="hidden">
-            <form id="detailFormIndividu" class="space-y-6">
-                <div id="rincianContainerIndividu" class="space-y-4">
-                    <label class="block text-gray-700 font-medium">Tambah Rincian Tugas</label>
+                <div id="staffRincianContainer" class="space-y-6">
+                    <!-- Staff sections will be dynamically inserted here -->
+                </div>
 
-                    <!-- Input Default yang Tidak Bisa Dihapus -->
-                    <div class="flex items-center space-x-2 mt-2">
-                        <input type="text" name="rincian_tugas[]" required placeholder="Masukkan rincian tugas..." class="w-full p-3 border border-gray-300 rounded-md">
-                    </div>
-
-                    <!-- Tombol Tambah -->
-                    <button type="button" id="addRincianIndividu" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center">
-                        <ion-icon name="add-outline" class="mr-2"></ion-icon> Tambah
+                <!-- Submit Button -->
+                <div class="flex justify-end mt-6 space-x-4">
+                    <button type="button" id="backButton"
+                        class="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-200">
+                        Kembali
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200">
+                        Simpan Tugas
                     </button>
                 </div>
-
-                <!-- Tombol Kirim -->
-                <div class="flex justify-end mt-6">
-                    <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 mt-1">Kirim</button>
-                </div>
-            </form>
+            </div>
         </div>
+    </form>
 
-        <!-- Untuk Kelompok -->
-        <div id="rincianKelompokContainer" class="hidden">
-            <form id="detailFormKelompok" class="space-y-6">
-                <div id="staffRincianContainer" class="space-y-6">
-                    <!-- Tempat untuk menampilkan rincian tugas per staff -->
-                </div>
-
-                <!-- Tombol Simpan (hanya muncul di kontainer terakhir) -->
-                <div class="flex justify-end mt-6">
-                    <button type="simpan" id="simpanButton" class="hidden px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 mt-1">Simpan</button>
-                </div>
-            </form>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-4 rounded-lg">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C15E15]"></div>
+            <p class="mt-2 text-[#C15E15]">Memproses...</p>
         </div>
     </div>
-</div>
 
-    <script>
-        document.getElementById('dropdownButton').addEventListener('click', function (event) {
-            event.stopPropagation(); // Menghentikan event propagasi agar dropdown tidak langsung tertutup
-            document.getElementById('dropdownMenu').classList.toggle('hidden');
-        });
-    
-        document.querySelectorAll('.dropdown-item').forEach(item => {
-            item.addEventListener('click', function () {
-                let selectedType = this.getAttribute('data-type');
-                document.getElementById('dropdownText').textContent = selectedType;
-                document.getElementById('dropdownMenu').classList.add('hidden');
-    
-                // Menampilkan kontainer yang sesuai
-                if (selectedType === "Kelompok") {
-                    document.getElementById('formIndividu').classList.add('hidden');
-                    document.getElementById('formKelompok').classList.remove('hidden');
-                } else {
-                    document.getElementById('formIndividu').classList.remove('hidden');
-                    document.getElementById('formKelompok').classList.add('hidden');
-                }
-            });
-        });
-    
-        // Menutup dropdown saat mengklik di luar dropdown
-        document.addEventListener('click', function (event) {
-            if (!document.getElementById('dropdownButton').contains(event.target)) {
-                document.getElementById('dropdownMenu').classList.add('hidden');
-            }
-        });
-    </script>
+    <!-- Footer -->
+    <%- include('../layout/footer') %>
 
-    <script>
-        document.getElementById('nextButton').addEventListener('click', function () {
-        let selectedType = document.getElementById('dropdownText').textContent;
-        let errorMessage = "";
-
-    if (selectedType === "Individu") {
-        let namaTugas = document.querySelector('input[name="nama_tugas"]').value.trim();
-        let selectedStaff = document.querySelector('select[name="staff"]').value;
-        let tanggalPengumpulan = document.querySelector('input[name="tanggal_pengumpulan"]').value.trim();
-        let jamPengumpulan = document.querySelector('input[name="jam_pengumpulan"]').value.trim();
-
-        if (namaTugas === "") {
-            errorMessage = "Nama Tugas harus diisi.";
-        } else if (selectedStaff === "") {
-            errorMessage = "Pilih Staff sebelum melanjutkan.";
-        } else if (tanggalPengumpulan === "") {
-            errorMessage = "Tanggal Pengumpulan harus diisi.";
-        } else if (jamPengumpulan === "") {
-            errorMessage = "Jam Pengumpulan harus diisi.";
-        }
-
-    }
-
-    if (selectedType === "Kelompok") {
-        let namaTugasKelompok = document.querySelector('input[name="nama_tugas_kelompok"]').value.trim();
-        let deskripsiTugasKelompok = document.querySelector('textarea[name="deskripsi_kelompok"]').value.trim();
-        let staffList = document.getElementById('searchStaff').value.trim();
-
-        if (namaTugasKelompok === "") {
-            errorMessage = "Nama Tugas harus diisi.";
-        } else if (deskripsiTugasKelompok === "") {
-            errorMessage = "Deskripsi Tugas harus diisi.";
-        } else if (staffList === "") {
-            errorMessage = "Tambahkan minimal satu staff sebelum melanjutkan.";
-        }
-    }
-    // Tampilkan alert jika ada error
-    if (errorMessage !== "") {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Validasi Gagal!',
-            text: errorMessage,
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#C15E15',
-        });
-        return; // Hentikan proses lanjut ke kontainer 2
-    }
-
-    // Jika semua input sudah terisi, lanjutkan ke kontainer kedua
-    document.getElementById('secondContainer').classList.remove('hidden');
-
-    if (selectedType === "Individu") {
-        document.getElementById('rincianIndividuContainer').classList.remove('hidden');
-        document.getElementById('rincianKelompokContainer').classList.add('hidden');
-    } else {
-        document.getElementById('rincianIndividuContainer').classList.add('hidden');
-        document.getElementById('rincianKelompokContainer').classList.remove('hidden');
-        generateKelompokRincian();
-    }
-
-    document.getElementById('secondContainer').scrollIntoView({ behavior: 'smooth' });
-});
-
+    <!-- Sweet Alert for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-        // Fungsi untuk Tambah Rincian Individu
-        document.getElementById('addRincianIndividu').addEventListener('click', function () {
-            let rincianContainer = document.getElementById('rincianContainerIndividu');
-    
-            let newInput = document.createElement("div");
-            newInput.classList.add("flex", "items-center", "space-x-2", "mt-2");
-    
-            let inputField = document.createElement("input");
-            inputField.type = "text";
-            inputField.name = "rincian_tugas[]";
-            inputField.placeholder = "Masukkan rincian tugas...";
-            inputField.classList.add("w-full", "p-3", "border", "border-gray-300", "rounded-md");
-    
-            let removeButton = document.createElement("button");
-            removeButton.type = "button";
-            removeButton.innerHTML = '<ion-icon name="trash-outline"></ion-icon>';
-            removeButton.classList.add("p-2", "bg-red-500", "text-white", "rounded-md", "hover:bg-red-700");
-    
-            removeButton.addEventListener("click", function () {
-                rincianContainer.removeChild(newInput);
-            });
-    
-            newInput.appendChild(inputField);
-            newInput.appendChild(removeButton);
-            rincianContainer.appendChild(newInput);
-        });
-    
-        // Fungsi untuk Menampilkan Rincian Tugas Per Staff dalam Kelompok
-        function generateKelompokRincian() {
-            let staffRincianContainer = document.getElementById('staffRincianContainer');
-            staffRincianContainer.innerHTML = ""; // Reset container
-    
-            let selectedStaff = ["Staff A", "Staff B", "Staff C"]; // Simulasi staff yang dipilih dari Kontainer 1
-    
-            selectedStaff.forEach((staff, index) => {
-                let staffContainer = document.createElement("div");
-                staffContainer.classList.add("bg-gray-100", "p-4", "rounded-md", "mt-4");
-    
-                let label = document.createElement("label");
-                label.classList.add("block", "text-gray-700", "font-medium", "mb-2");
-                label.textContent = `Rincian Tugas untuk ${staff}`;
-    
-                let inputContainer = document.createElement("div");
-                inputContainer.classList.add("space-y-2");
-    
-                let inputField = document.createElement("input");
-                inputField.type = "text";
-                inputField.name = `rincian_tugas_${staff}[]`;
-                inputField.placeholder = "Masukkan rincian tugas wajib...";
-                inputField.classList.add("w-full", "p-3", "border", "border-gray-300", "rounded-md");
-    
-                let addButton = document.createElement("button");
-                addButton.type = "button";
-                addButton.innerHTML = '<ion-icon name="add-outline"></ion-icon> Tambah';
-                addButton.classList.add("px-4", "py-2", "bg-green-600", "text-white", "rounded-md", "hover:bg-green-700", "mt-2");
-    
-                let removeButton = document.createElement("button");
-                removeButton.type = "button";
-                removeButton.innerHTML = '<ion-icon name="trash-outline"></ion-icon> Hapus';
-                removeButton.classList.add("px-4", "py-2", "bg-red-500", "text-white", "rounded-md", "hover:bg-red-700", "mt-2", "ml-2");
-    
-                addButton.addEventListener("click", function () {
-                    let newInput = inputField.cloneNode();
-                    inputContainer.appendChild(newInput);
-                });
-    
-                removeButton.addEventListener("click", function () {
-                    staffRincianContainer.removeChild(staffContainer);
-                });
-    
-                inputContainer.appendChild(inputField);
-                staffContainer.appendChild(label);
-                staffContainer.appendChild(inputContainer);
-                staffContainer.appendChild(addButton);
-                staffContainer.appendChild(removeButton);
-                staffRincianContainer.appendChild(staffContainer);
-            });
-    
-            document.getElementById('simpanButton').classList.remove('hidden');
-        }
-    </script>
-    
-     <!-- Footer -->
-     <%- include('../layout/footer') %>
+    <!-- Custom JS -->
+    <script src="/js/taskForm.js"></script>
 </body>
 </html>
