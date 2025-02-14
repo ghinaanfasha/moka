@@ -8,7 +8,8 @@ var session = require('express-session');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/userRouter');
 var adminRouter = require('./routes/adminRouter');
-var kepalaRouter = require('./routes/kepalaRouter')
+var kepalaRouter = require('./routes/kepalaRouter');
+var staffRouter = require('./routes/staffRouter');
 var profileRouter = require('./routes/profileRouter');
 
 var app = express();
@@ -16,12 +17,14 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+process.env.TZ = 'Asia/Jakarta';
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 app.use(session({
   secret: process.env.COOKIE_SECRET, 
@@ -37,7 +40,8 @@ app.use(session({
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
-app.use('/kepala', kepalaRouter)
+app.use('/kepala', kepalaRouter);
+app.use('/staff', staffRouter);
 app.use('/profile', profileRouter);
 
 app.use((req, res, next) => {

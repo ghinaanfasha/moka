@@ -16,8 +16,8 @@
     <%- include('../layout/navKepala') %>
     
     <!-- Kontainer Utama -->
-    <div class="flex-grow flex-justify-center items-start mt-[80px] ml-[20px]">
-        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1400px]">
+    <div class="flex-grow flex-justify-center items-start mt-[80px] mx-[20px]">
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg ">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-[#C15E15]">Tugas</h2>
                 <a href="/kepala/formAddTugas" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10]">Tambah Tugas</a>
@@ -30,124 +30,179 @@
                         <tr class="bg-[#C15E15] text-white">
                             <th class="p-3 border">No</th>
                             <th class="p-3 border">Nama Tugas</th>
-                            <th class="p-3 border">Created At</th>
-                            <th class="p-3 border">Deadline</th>
-                            <th class="p-3 border">Nama Staff</th>
-                            <th class="p-3 border">Status</th>
-                            <th class="p-3 border">Read At</th>
+                            <th class="p-3 border">Dibuat</th>
+                            <th class="p-3 border">Tenggat</th>
+                            <th class="p-3 border">Ditugaskan Ke</th>
+                            <th class="p-3 border">Status Baca</th>
+                            <th class="p-3 border">Waktu Baca</th>
                             <th class="p-3 border">Progres</th>
-                            <th class="p-3 border">Keterangan</th>
                             <th class="p-3 border">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="taskTableBody" class="text-gray-700">
-                        <script>
-                            const taskTableBody = document.getElementById('taskTableBody');
+                    <tbody class="text-gray-700">
+                        <% 
+                        function formatDateTime(isoString, adjustTimezone = false) {
+                            if (!isoString || isoString === '-') return { time: '-', date: '' };
+                            
+                            const date = new Date(isoString);
+                            if (adjustTimezone) {
+                                date.setHours(date.getHours() + 7); // Only adjust if needed
+                            }
+                            
+                            const timePart = date.toTimeString().split(' ')[0].slice(0, 5);
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            
+                            return {
+                                time: timePart,
+                                date: `${day}/${month}/${year}`
+                            };
+                        }
 
-                            // Contoh data tugas dengan 1 dan lebih dari 1 staff
-                            const tasks = [
-                                {
-                                    id: 1,
-                                    no: 1,
-                                    namaTugas: "Tugas 1",
-                                    createdAt: { time: "08:30", date: "2024-02-01" },
-                                    deadline: { time: "17:00", date: "2024-02-10" },
-                                    namaStaff: ["Staff A", "Staff B"], 
-                                    status: ["Sudah Dibaca", "Belum Dibaca"],
-                                    readAt: [{ time: "10:00", date: "2024-02-02" }, { time: "-", date: "-" }],
-                                    progres: ["50%", "20%"],
-                                    keterangan: ["Diberikan", "Revisi"]
-                                },
-                                {
-                                    id: 2,
-                                    no: 2,
-                                    namaTugas: "Tugas 2",
-                                    createdAt: { time: "09:00", date: "2024-02-03" },
-                                    deadline: { time: "15:00", date: "2024-02-12" },
-                                    namaStaff: ["Staff C"], 
-                                    status: ["Sudah Dibaca"],
-                                    readAt: [{ time: "11:00", date: "2024-02-04" }],
-                                    progres: ["80%"],
-                                    keterangan: ["Diberikan"]
+                        function allValuesAreSame(arr) {
+                            return arr.every(val => val === arr[0]);
+                        }
+
+                        function groupStaffAndStatus(task) {
+                            const staffGroups = {};
+                            
+                            task.namaStaff.forEach((staff, index) => {
+                                if (!staffGroups[staff]) {
+                                    staffGroups[staff] = {
+                                        statusBaca: [],
+                                        readAt: [],
+                                        keterangan: []
+                                    };
                                 }
-                            ];
+                                staffGroups[staff].statusBaca.push(task.statusBaca[index]);
+                                staffGroups[staff].readAt.push(task.readAt[index]);
+                                staffGroups[staff].keterangan.push(task.keterangan[index]);
+                            });
 
-                            tasks.forEach((task) => {
-                                task.namaStaff.forEach((staff, index) => {
-                                    taskTableBody.innerHTML += `
-                                        <tr class="border">
-                                            ${index === 0 ? `<td class="p-3 border" rowspan="${task.namaStaff.length}">${task.no}</td>` : ""}
-                                            ${index === 0 ? `<td class="p-3 border" rowspan="${task.namaStaff.length}">${task.namaTugas}</td>` : ""}
-                                            ${index === 0 ? `
-                                                <td class="p-3 border" rowspan="${task.namaStaff.length}">
-                                                    <div>${task.createdAt.time}</div>
-                                                    <div class="text-sm">${task.createdAt.date}</div>
-                                                </td>
-                                                <td class="p-3 border" rowspan="${task.namaStaff.length}">
-                                                    <div>${task.deadline.time}</div>
-                                                    <div class="text-sm">${task.deadline.date}</div>
-                                                </td>
-                                            ` : ""}
-                                            <td class="p-3 border">${staff}</td>
-                                            <td class="p-3 border">
-                                                <span class="px-3 py-1 rounded-md text-white ${task.status[index] === "Sudah Dibaca" ? 'bg-green-500' : 'bg-red-500'}">
-                                                    ${task.status[index]}
-                                                </span>
+                            return Object.entries(staffGroups).map(([staff, data]) => ({
+                                staff,
+                                statusBaca: allValuesAreSame(data.statusBaca) ? [data.statusBaca[0]] : data.statusBaca,
+                                readAt: allValuesAreSame(data.readAt) ? [data.readAt[0]] : data.readAt,
+                                keterangan: allValuesAreSame(data.keterangan) ? [data.keterangan[0]] : data.keterangan
+                            }));
+                        }
+
+                        // Mengurutkan tasks berdasarkan createdAt secara descending
+                        const sortedTasks = [...tasks].sort((a, b) => 
+                            new Date(a.createdAt) - new Date(b.createdAt)
+                        );
+
+                        let rowIndex = 1;
+                        sortedTasks.forEach(task => {
+                            const groupedStaff = groupStaffAndStatus(task);
+                            const totalRows = groupedStaff.reduce((sum, group) => 
+                                sum + Math.max(group.statusBaca.length, group.keterangan.length), 0);
+                        %>
+                            <% groupedStaff.forEach((group, groupIndex) => {
+                                const staffRows = Math.max(group.statusBaca.length, group.keterangan.length);
+                            %>
+                                <% for(let i = 0; i < staffRows; i++) { %>
+                                    <tr class="border">
+                                        <% if (groupIndex === 0 && i === 0) { %>
+                                            <td class="p-2 border text-center" rowspan="<%= totalRows %>"><%= rowIndex %></td>
+                                            <td class="p-2 border" rowspan="<%= totalRows %>"><%= task.taskName %></td>
+                                            <!-- For createdAt (needs timezone adjustment) -->
+                                            <td class="p-2 border text-center" rowspan="<%= totalRows %>">
+                                                <% const created = formatDateTime(task.createdAt.toISOString(), false) %>
+                                                <div><%= created.time %></div>
+                                                <div class="text-sm"><%= created.date %></div>
                                             </td>
-                                            <td class="p-3 border">
-                                                <div>${task.readAt[index].time}</div>
-                                                <div class="text-sm">${task.readAt[index].date}</div>
+
+                                            <!-- For deadline (no timezone adjustment needed) -->
+                                            <td class="p-2 border text-center" rowspan="<%= totalRows %>">
+                                                <% const deadline = formatDateTime(task.deadline.toISOString(), false) %>
+                                                <div><%= deadline.time %></div>
+                                                <div class="text-sm"><%= deadline.date %></div>
                                             </td>
-                                            <td class="p-3 border">
-                                                <div class="flex items-center justify-between bg-[#D9D9D9] rounded-full px-3 py-2">
-                                                    <span>${task.progres[index]}</span>
-                                                    <a href="../admin/formProgres/${task.id}" class="bg-blue-500 p-2 rounded-full hover:bg-blue-700 flex items-center justify-center">
+                                        <% } %>
+
+                                        <% if (i === 0) { %>
+                                            <td class="p-2 border" rowspan="<%= staffRows %>"><%= group.staff %></td>
+                                        <% } %>
+
+                                        <td class="p-2 border">
+                                            <span class="px-3 py-1 rounded-md text-white <%= group.statusBaca[i] === 'Sudah dibaca' ? 'bg-green-500' : 'bg-red-500' %>">
+                                                <%= group.statusBaca[i] || group.statusBaca[0] %>
+                                            </span>
+                                        </td>
+                                        <td class="p-2 border">
+                                            <% 
+                                            const readTime = group.readAt[i];
+                                            if (readTime && readTime !== '-') {
+                                                const readAt = formatDateTime(readTime instanceof Date ? readTime.toISOString() : readTime, false);
+                                            %>
+                                                <div><%= readAt.time %></div>
+                                                <% if (readAt.date) { %>
+                                                    <div class="text-sm"><%= readAt.date %></div>
+                                                <% } %>
+                                            <% } else { %>
+                                                <div>-</div>
+                                            <% } %>
+                                        </td>
+                                        <% if (groupIndex === 0 && i === 0) { %>
+                                            <td class="p-2 border" rowspan="<%= totalRows %>">
+                                                <div class="flex items-center justify-between bg-[#D9D9D9] rounded-full px-3 py-2 space-x-2">
+                                                    <span><%= task.progress %></span>
+                                                    <a href="/kepala/infoProgresTugas/<%= task.taskID %>" 
+                                                    class="bg-blue-500 p-2 rounded-full hover:bg-blue-700 flex items-center justify-center">
                                                         <ion-icon name="information-circle-outline" class="text-white text-xl"></ion-icon>
                                                     </a>
                                                 </div>
                                             </td>
-                                            <td class="p-3 border">
-                                                <span class="px-3 py-1 rounded-md text-white ${task.keterangan[index] === "Diberikan" ? 'bg-blue-500' : 'bg-red-500'}">
-                                                    ${task.keterangan[index]}
-                                                </span>
-                                            </td>
-                                            <td class="p-3  flex justify-center space-x-2">
-                                                <a href="../admin/formEditTask/${task.id}" class="bg-green-500 p-2 rounded-full hover:bg-green-700 flex items-center justify-center">
-                                                    <ion-icon name="pencil-outline" class="text-white text-lg"></ion-icon>
-                                                </a>
-                                                <button onclick="openDeleteModal(${task.id})" class="bg-red-500 p-2 rounded-full hover:bg-red-700 flex items-center justify-center">
-                                                    <ion-icon name="trash-outline" class="text-white text-lg"></ion-icon>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                });
-                            });
 
-                            function openDeleteModal(taskId) {
-                                Swal.fire({
-                                    title: "Konfirmasi Hapus",
-                                    text: "Apakah Anda yakin ingin menghapus tugas ini?",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonColor: "#d33",
-                                    cancelButtonColor: "#808080",
-                                    confirmButtonText: "Ya, Hapus",
-                                    cancelButtonText: "Batal",
-                                    heightAuto: false
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.href = "/admin/deleteTask/" + taskId;
-                                    }
-                                });
-                            }
-                        </script>
-                    </tbody>
+                                            <td class="p-2 border" rowspan="<%= totalRows %>">
+                                                <div class="flex items-center justify-center space-x-2">
+                                                    <a href="../admin/formEditTask/<%= task.taskID %>" 
+                                                    class="bg-green-500 p-2 rounded-full hover:bg-green-700 flex items-center justify-center">
+                                                        <ion-icon name="pencil-outline" class="text-white text-lg"></ion-icon>
+                                                    </a>
+                                                    <button onclick="openDeleteModal('<%= task.taskID %>')" 
+                                                            class="bg-red-500 p-2 rounded-full hover:bg-blue-700 flex items-center justify-center">
+                                                        <ion-icon name="trash-outline" class="text-white text-lg"></ion-icon>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% } %>
+                            <% }); %>
+                        <% 
+                            rowIndex++;
+                        }); 
+                        %>
+                    </tbody>                                                                   
                 </table>
+                
             </div>
         </div>
     </div>
      <!-- Footer -->
      <%- include('../layout/footer') %>
+
+     <script>
+        function openDeleteModal(taskId) {
+            Swal.fire({
+                title: "Konfirmasi Hapus",
+                text: "Apakah Anda yakin ingin menghapus tugas ini?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#808080",
+                confirmButtonText: "Ya, Hapus",
+                cancelButtonText: "Batal",
+                heightAuto: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/admin/deleteTask/" + taskId;
+                }
+            });
+        }
+     </script>
 </body>
 </html>

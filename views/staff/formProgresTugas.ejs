@@ -15,14 +15,17 @@
     
     <!-- Navbar -->
     <%- include('../layout/navStaf') %>
+    <a href="/staff/daftarTugas" class="absolute left-10 top-[110px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+        <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
+        <span class="text-lg font-medium">Kembali</span>
+    </a>
     
     <!-- Kontainer Utama -->
-    <div class="flex-grow justify-center items-start mt-[50px] ml-[20px]">
-        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1400px]">
+    <div class="flex flex-grow justify-center items-start mt-[90px]">
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
             
             <!-- Header -->
             <h2 class="text-2xl font-bold text-[#C15E15] mb-4">Progress Tugas</h2>
-
             <!-- Informasi Tugas -->
             <div class="flex items-start">
                 <!-- Informasi Tugas Kiri -->
@@ -30,17 +33,17 @@
                     <div class="flex">
                         <span class="w-[140px] font-medium">Nama Tugas</span>
                         <span class="mr-2">:</span> 
-                        <span class="font-light">Indikator Kinerja</span>
+                        <span class="font-light"><%= task.namaTugas %></span>
                     </div>
                     <div class="flex mt-1">
                         <span class="w-[140px] font-medium">Penugas</span>
                         <span class="mr-2">:</span>
-                        <span class="font-light">Medi Iswandi</span>
+                        <span class="font-light"><%= task.penugas %></span>
                     </div>
                     <div class="flex mt-1">
                         <span class="w-[140px] font-medium">Deskripsi</span>
                         <span class="mr-2">:</span>
-                        <span class="font-light">Membuat Faktor Pendorong dan Penghambat Indikator Kinerja</span>
+                        <span class="font-light"><%= task.deskripsiTugas %></span>
                     </div>
                 </div>
                 
@@ -50,14 +53,44 @@
                 <!-- Informasi Tugas Kanan -->
                 <div class="w-1/2 pl-4 text-gray-600">
                     <div class="flex">
-                        <span class="w-[100px] font-medium">Dokumen</span>
+                        <span class="w-[130px] font-medium">Dokumen</span>
                         <span class="mr-2">:</span>
-                        <a href="/files/laporan-q1.pdf" class="text-blue-500 underline">Download PDF</a>
+                        <% if (task.taskFile) { %>
+                            <a href="/staff/downloadTaskFile/original/<%= task.id %>" 
+                               class="text-blue-500 hover:text-blue-700 underline">
+                                Download
+                            </a>
+                        <% } else { %>
+                            <span class="text-gray-400">-</span>
+                        <% } %>
                     </div>
                     <div class="flex mt-1">
-                        <span class="w-[100px] font-medium">Deadline</span>
+                        <span class="w-[130px] font-medium">Dibuat</span>
                         <span class="mr-2">:</span>
-                        <span class="font-light">02/02/2025 (22.00)</span>
+                        <span class="font-light">
+                            <%= new Date(task.createdAt).toLocaleString('id-ID', { 
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            }).replace(/\./g, ':') %>
+                        </span>
+                    </div>
+                    <div class="flex mt-1">
+                        <span class="w-[130px] font-medium">Tenggat</span>
+                        <span class="mr-2">:</span>
+                        <span class="font-light">
+                            <%= new Date(task.deadline).toLocaleString('id-ID', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            }).replace(/\./g, ':') %>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -69,14 +102,93 @@
                         <tr class="bg-[#C15E15] text-white">
                             <th class="p-3 border text-center">No</th>
                             <th class="p-3 border text-center">Rincian Tugas</th>
-                            <th class="p-3 border text-center">Status</th>
+                            <th class="p-3 border text-center">Status Pengerjaan</th>
+                            <th class="p-3 border text-center">Waktu Penyelesaian</th>
+                            <th class="p-3 border text-center">Keterangan</th>
                             <th class="p-3 border text-center">Dokumen</th>
                             <th class="p-3 border text-center">Catatan</th>
                             <th class="p-3 border text-center">Feedback</th>
                             <th class="p-3 border text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="progressTableBody" class="text-gray-700"></tbody>
+                    <!-- formProgresTugas (yang menerima tugas) -->
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <% task.breakdowns.forEach((breakdown, index) => { %>
+                            <tr>
+                                <td class="p-2 border text-center">
+                                    <%= index + 1 %>
+                                </td>
+                                <td class="p-2 border text-left">
+                                    <%= breakdown.rincian %>
+                                </td>
+                                <td class="p-2 border text-center">
+                                    <span class="px-2 py-1 inline-flex text-white rounded-md 
+                                        <%= breakdown.breakdownStatus === 'Selesai' ? 'bg-green-500' : 'bg-red-500' %>">
+                                        <%= breakdown.breakdownStatus %>
+                                    </span>
+                                </td>
+                                <td class="p-1 border text-center">
+                                    <%
+                                        function formatDateTime(isoString, adjustTimezone = false) {
+                                            if (!isoString || isoString === '-') return { time: '-', date: '' };
+                                            
+                                            const date = new Date(isoString);
+                                            if (adjustTimezone) {
+                                                date.setHours(date.getHours() + 7); // Only adjust if needed
+                                            }
+                                            
+                                            const timePart = date.toTimeString().split(' ')[0].slice(0, 5);
+                                            const day = String(date.getDate()).padStart(2, '0');
+                                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                                            const year = date.getFullYear();
+                                            
+                                            return {
+                                                time: timePart,
+                                                date: `${day}/${month}/${year}`
+                                            };
+                                        }
+                                    %>
+                                    <% 
+                                        let submitTime;
+                                        if (breakdown.submitTime) {
+                                            submitTime = formatDateTime(breakdown.submitTime.toISOString(), false);
+                                        } else {
+                                            submitTime = { time: '-', date: '' }; // Default value if submitTime is null
+                                        }
+                                    %>
+                                    <div><%= submitTime.time %></div>
+                                    <div class="text-sm"><%= submitTime.date %></div>
+                                </td>
+                                <td class="p-2 border text-center text-white">
+                                    <span class="px-2 py-1 rounded-md 
+                                                <%= breakdown.taskStatus === 'Diberikan' ? 'bg-blue-500' : 
+                                                breakdown.taskStatus === 'Revisi' ? 'bg-red-500' : 'bg-green-500' %>">
+                                            <%= breakdown.taskStatus %>
+                                    </span>
+                                </td>
+                                <td class="p-2 border text-center">
+                                    <% if (breakdown.submitFile) { %>
+                                        <a href="/staff/download-submission/<%= task.id %>/<%= breakdown.id %>" 
+                                           class="text-blue-500 hover:text-blue-700 underline ml-1">
+                                            Download
+                                        </a>
+                                    <% } else { %>
+                                        <span class="text-gray-400">-</span>
+                                    <% } %>
+                                </td>
+                                <td class="p-2 border text-center"><%= breakdown.note || '-' %></td>
+                                <td class="p-2 border text-center"><%= breakdown.feedback || '-' %></td>
+                                <td class="p-2 border flex justify-center">
+                                    <a href="/staff/updateTugas/<%= task.id %>/<%= breakdown.id %>" 
+                                    class="bg-green-500 p-2 rounded-full hover:bg-green-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M4 21v-4l14-14 4 4-14 14H4zm2-2h2l11-11-2-2-11 11v2z"/>
+                                        </svg>
+                                    </a>
+                                </td>                           
+                            </tr>
+                        <% }); %>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -84,46 +196,6 @@
 
     <!-- Footer -->
     <%- include('../layout/footer') %>
-
-    <script>
-        const progressTableBody = document.getElementById('progressTableBody');
-
-        const progressData = [
-            { no: 1, rincian: "Indikator Kinerja Utama", status: "Diteruskan", dokumen: "data.pdf", catatan: "Data lengkap", feedback: "Baik" },
-            { no: 2, rincian: "Indikator Kinerja Daerah", status: "Selesai", dokumen: "analisis.pdf", catatan: "Masih dihitung", feedback: "-" },
-            { no: 3, rincian: "Indikator Kinerja Umum", status: "Revisi", dokumen: "-", catatan: "-", feedback: "-" },
-            { no: 4, rincian: "Membuat bahan presentasi rapat", status: "Diberikan", dokumen: "-", catatan: "-", feedback: "-" }
-        ];
-
-        progressData.forEach(item => {
-            let statusColor = "text-gray-700"; // Default warna
-            if (item.status === "Selesai" || item.status === "Diberikan") statusColor = "text-green-500";
-            if (item.status === "Diteruskan") statusColor = "text-yellow-500";
-            if (item.status === "Revisi") statusColor = "text-red-500";
-
-            progressTableBody.innerHTML += `
-                <tr class="border">
-                    <td class="p-3 border w-12 text-center">${item.no}</td>
-                    <td class="p-3 border w-25 text-left">${item.rincian}</td>
-                    <td class="p-3 border w-10 text-left ${statusColor} ">${item.status}</td>
-                    <td class="p-3 border w-10 text-left">${item.dokumen !== "-" ? `<a href="/files/${item.dokumen}" class="text-blue-500 underline">Lihat</a>` : "-"}</td>
-                    <td class="p-3 border w-25 text-left">${item.catatan}</td>
-                    <td class="p-3 border w-25 text-left">${item.feedback}</td>
-                    <td class="p-3 w-15 flex justify-center space-x-2">
-                        <!-- Tombol Edit -->
-                        <a href="../admin/formEditTask/${item.no}" class="bg-green-500 p-2 rounded-full hover:bg-green-700 flex items-center justify-center">
-                            <ion-icon name="pencil-outline" class="text-white text-xl"></ion-icon>
-                        </a>
-
-                        <!-- Tombol Share -->
-                        <button class="bg-yellow-400 p-2 rounded-full hover:bg-yellow-500 flex items-center justify-center">
-                            <ion-icon name="person-add-outline" class="text-white text-xl"></ion-icon>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-    </script>
-
 </body>
 </html>
+

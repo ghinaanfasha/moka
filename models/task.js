@@ -5,7 +5,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Task.belongsTo(models.User, {
         foreignKey: 'assignorID',
-        as: 'user'
+        as: 'assignor'
+      });
+      Task.hasMany(models.TaskBreakdown, {
+        foreignKey: 'taskID',
+        as: 'breakdowns'
       });
     }
   }
@@ -19,21 +23,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    assigneeID: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     taskName: DataTypes.STRING,
     taskDesc: DataTypes.TEXT,
     taskFile: DataTypes.STRING,
-    deadline: DataTypes.DATE,
-    readStatus: DataTypes.BOOLEAN,
-    readAt: DataTypes.DATE,
-    status: DataTypes.STRING
+    deadline: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Task',
-    tableName: 'tasks'
+    tableName: 'tasks',
+    timestamps: true,
+    timezone: '+07:00'
   });
   return Task;
 };

@@ -1,6 +1,11 @@
 const express = require('express');
 const authMiddleware = require('../middleware/authMiddleware.js');
-const { getUser, showTugas, showRiwayat } = require('../controllers/kepalaController'); 
+const upload = require('../middleware/upload.js');
+
+const { getUser, showTugas, showTaskProgress,
+        updateTaskProgress, showFormAddTugas, 
+        showRiwayat ,getStaffForAssignment, addTask
+    } = require('../controllers/kepalaController'); 
 
 const kepalaRouter = express.Router();
 
@@ -27,6 +32,8 @@ kepalaRouter.get('/tugas', authMiddleware, checkKepalaRole, showTugas, async (re
         res.status(500).send('Internal Server Error');
     }
 });
+kepalaRouter.get('/infoProgresTugas/:taskID', authMiddleware, checkKepalaRole, showTaskProgress);
+kepalaRouter.post('/updateTaskProgress', authMiddleware, checkKepalaRole, updateTaskProgress);
 kepalaRouter.get('/riwayat', authMiddleware, checkKepalaRole, showRiwayat, async (req, res) => {
     try {
         await getUser(req, res);
@@ -35,4 +42,15 @@ kepalaRouter.get('/riwayat', authMiddleware, checkKepalaRole, showRiwayat, async
         res.status(500).send('Internal Server Error');
     }
 });
+kepalaRouter.get('/formAddTugas', authMiddleware, checkKepalaRole, showFormAddTugas, async (req, res) => {
+    try {
+        await getUser(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+kepalaRouter.get('/get-staff-for-assignment', authMiddleware, checkKepalaRole, getStaffForAssignment);
+kepalaRouter.post('/add-task', addTask);
+
 module.exports = kepalaRouter;

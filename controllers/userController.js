@@ -79,8 +79,11 @@ const login = async (req, res, next) => {
         case 'Kepala BAPPEDA':
           redirectUrl = '/kepala/dashboard';
           break;
+        case 'Kepala Bidang':
+          redirectUrl = '/staff/dashboard';
+          break;
         case 'Staff':
-          redirectUrl = '/dashboard';
+          redirectUrl = '/staff/dashboard';
           break;
         default:
           redirectUrl = '/';
