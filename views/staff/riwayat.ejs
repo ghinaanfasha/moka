@@ -6,41 +6,35 @@
     <title>Riwayat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
-    <!-- Import SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        /* Dropdown Fix */
         #dropdownMenu {
-            display: none; /* Default hidden */
+            display: none;
             position: absolute;
             background: white;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 6px;
             min-width: 150px;
-            z-index: 50; /* Supaya tidak tertutup elemen lain */
+            z-index: 50;
         }
     </style>
 </head>
 <body class="h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
     
-    <!-- Navbar -->
     <%- include('../layout/navStaf') %>
 
-    <!-- Kontainer Utama -->
     <div class="flex flex-grow justify-center items-start mt-[80px] ml-[20px]">
-        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1400px]">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-[#C15E15]">Riwayat</h2>
 
-                <!-- Dropdown Pilih Tipe -->
                 <div class="relative">
                     <button id="dropdownButton" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10] flex items-center relative">
                         <span id="dropdownText">Tugas</span>
                         <ion-icon name="chevron-down-outline" class="ml-2"></ion-icon>
                     </button>
 
-                    <!-- Dropdown Menu -->
                     <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg border border-gray-300 z-50">
                         <button class="dropdown-item block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" data-type="Tugas">Tugas</button>
                         <button class="dropdown-item block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200" data-type="Penugasan">Penugasan</button>
@@ -48,21 +42,9 @@
                 </div>
             </div>
             
-            <!-- Tabel -->
             <div class="overflow-auto w-full">
                 <table class="w-full border-collapse border border-gray-300 overflow-visible">
-                    <thead>
-                        <tr class="bg-[#C15E15] text-white text-center">
-                            <th class="p-3 border w-[10px]">No</th>
-                            <th class="p-3 border w-[80px]">Nama Tugas</th>
-                            <th class="p-3 border w-[40px]">Deskripsi Tugas</th>
-                            <th class="p-3 border w-[30px]">Penugas</th>
-                            <th class="p-3 border w-[80px]">Deadline</th>
-                            <th class="p-3 border w-[80px]">Created at</th>
-                            <th class="p-3 border w-[80px]">Rincian Tugas</th>
-                            <th class="p-3 border w-[20px]">Keterangan</th>
-                        </tr>
-                    </thead>
+                    <thead id="tableHeader" class="bg-[#C15E15] text-white text-center"></thead>
                     <tbody id="taskTableBody" class="text-gray-700"></tbody>
                 </table>
             </div>
@@ -73,93 +55,101 @@
         const dropdownButton = document.getElementById("dropdownButton");
         const dropdownMenu = document.getElementById("dropdownMenu");
         const dropdownText = document.getElementById("dropdownText");
+        const tableHeader = document.getElementById("tableHeader");
+        const taskTableBody = document.getElementById("taskTableBody");
 
-        // Toggle dropdown saat tombol diklik
         dropdownButton.addEventListener("click", function (event) {
             event.stopPropagation();
             dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
         });
 
-        // Pilihan dropdown
         document.querySelectorAll(".dropdown-item").forEach(item => {
             item.addEventListener("click", function () {
                 const selectedType = this.getAttribute("data-type");
                 dropdownText.textContent = selectedType;
                 dropdownMenu.style.display = "none";
+                updateTable(selectedType);
             });
         });
 
-        // Tutup dropdown jika klik di luar
         document.addEventListener("click", function (event) {
             if (!dropdownButton.contains(event.target)) {
                 dropdownMenu.style.display = "none";
             }
         });
 
-        // Contoh data tugas
-        const taskTableBody = document.getElementById("taskTableBody");
-        const tasks = [
+        const tugasData = [
             {
-                id: 1,
-                no: 1,
                 namaTugas: "Laporan Keuangan Q1",
                 deskripsiTugas: "Membuat laporan keuangan triwulan pertama",
                 penugas: "Kepala Bappeda",
                 deadline: { time: "17:00", date: "2024-03-10" },
                 createdAt: { time: "08:30", date: "2024-02-01" },
-                rincianTugas: [
+                rincian: [
                     { rincian: "Pengumpulan data", keterangan: "Diberikan" },
                     { rincian: "Analisis keuangan", keterangan: "Revisi" },
                     { rincian: "Penyusunan laporan", keterangan: "Selesai" }
                 ]
-            },
+            }
+        ];
+
+        const penugasanData = [
             {
-                id: 2,
-                no: 2,
-                namaTugas: "Evaluasi Proyek Infrastruktur",
-                deskripsiTugas: "Menganalisis dampak proyek infrastruktur",
-                penugas: "Kepala Bappeda",
-                deadline: { time: "15:00", date: "2024-04-05" },
-                createdAt: { time: "10:00", date: "2024-03-01" },
-                rincianTugas: [
-                    { rincian: "Survey lokasi", keterangan: "Selesai" },
-                    { rincian: "Wawancara masyarakat", keterangan: "Selesai" },
-                    { rincian: "Analisis data", keterangan: "Selesai" }
+                namaTugas: "Sosialisasi Program",
+                deskripsiTugas: "Menyusun materi sosialisasi",
+                penugas: "Bappeda",
+                deadline: { time: "15:00", date: "2024-03-15" },
+                createdAt: { time: "09:00", date: "2024-02-05" },
+                status: "Dalam Proses",
+                rincian: [
+                    { rincian: "Pembuatan Slide", keterangan: "Diberikan" },
+                    { rincian: "Cetak Brosur", keterangan: "Revisi" }
                 ]
             }
         ];
 
-        // Loop untuk memasukkan data ke dalam tabel
-        tasks.forEach((task, index) => {
-            task.rincianTugas.forEach((rincian, rincianIndex) => {
-                const row = document.createElement("tr");
-                row.classList.add("border");
+        function updateTable(type) {
+            taskTableBody.innerHTML = "";
 
-                row.innerHTML = `
-                    ${rincianIndex === 0 ? `<td class="p-3 border text-left" rowspan="${task.rincianTugas.length}">${task.no}</td>` : ""}
-                    ${rincianIndex === 0 ? `<td class="p-3 border text-left" rowspan="${task.rincianTugas.length}">${task.namaTugas}</td>` : ""}
-                    ${rincianIndex === 0 ? `<td class="p-3 border text-left" rowspan="${task.rincianTugas.length}">${task.deskripsiTugas}</td>` : ""}
-                    ${rincianIndex === 0 ? `<td class="p-3 border text-left" rowspan="${task.rincianTugas.length}">${task.penugas}</td>` : ""}
-                    ${rincianIndex === 0 ? `
-                        <td class="p-3 border text-left" rowspan="${task.rincianTugas.length}">
-                            <div>${task.deadline.time}</div>
-                            <div class="text-sm">${task.deadline.date}</div>
-                        </td>
-                        <td class="p-3 border text-left" rowspan="${task.rincianTugas.length}">
-                            <div>${task.createdAt.time}</div>
-                            <div class="text-sm">${task.createdAt.date}</div>
-                        </td>
-                    ` : ""}
-                    <td class="p-3 border text-left">${rincian.rincian}</td>
-                    <td class="p-3 border text-${rincian.keterangan === "Diberikan" ? "blue-500" : rincian.keterangan === "Revisi" ? "red-500" : "green-500"}">${rincian.keterangan}</td>
-                `;
+            let data = type === "Tugas" ? tugasData : penugasanData;
+            
+            tableHeader.innerHTML = `
+                <tr>
+                    <th class="p-3 border">No</th>
+                    <th class="p-3 border">Nama Tugas</th>
+                    <th class="p-3 border">Deskripsi Tugas</th>
+                    <th class="p-3 border">Penugas</th>
+                    <th class="p-3 border">Deadline</th>
+                    <th class="p-3 border">Created at</th>
+                    ${type === "Penugasan" ? '<th class="p-3 border">Status</th>' : ""}
+                    <th class="p-3 border">Rincian Tugas</th>
+                    <th class="p-3 border">Keterangan</th>
+                </tr>`;
 
-                taskTableBody.appendChild(row);
+            data.forEach((task, index) => {
+                task.rincian.forEach((rincian, rincianIndex) => {
+                    taskTableBody.innerHTML += `
+                        <tr class="border">
+                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${index + 1}</td>` : ""}
+                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.namaTugas}</td>` : ""}
+                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.deskripsiTugas}</td>` : ""}
+                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.penugas}</td>` : ""}
+                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">
+                                ${task.deadline.time} <br> <span class="text-sm">${task.deadline.date}</span>
+                            </td>` : ""}
+                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">
+                                ${task.createdAt.time} <br> <span class="text-sm">${task.createdAt.date}</span>
+                            </td>` : ""}
+                            ${type === "Penugasan" && rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.status}</td>` : ""}
+                            <td class="p-3 border">${rincian.rincian}</td>
+                            <td class="p-3 border">${rincian.keterangan}</td>
+                        </tr>`;
+                });
             });
-        });
+        }
+
+        updateTable("Tugas");
     </script>
 
-    <!-- Footer -->
-    <%- include('../layout/footer') %>
 </body>
 </html>
