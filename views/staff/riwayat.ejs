@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <style>
         #dropdownMenu {
             display: none;
@@ -22,13 +21,15 @@
 </head>
 <body class="h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
     
+    <!-- Navbar -->
     <%- include('../layout/navStaf') %>
 
-    <div class="flex flex-grow justify-center items-start mt-[80px] ml-[20px]">
-        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1400px]">
+    <!-- Kontainer Utama -->
+    <div class="flex-grow flex justify-center items-start mt-[80px] mx-[20px]">
+        <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-full max-w-[1400px]">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-[#C15E15]">Riwayat</h2>
-
+                
                 <div class="relative">
                     <button id="dropdownButton" class="px-4 py-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A14B10] flex items-center relative">
                         <span id="dropdownText">Tugas</span>
@@ -42,114 +43,173 @@
                 </div>
             </div>
             
+            <!-- Tabel -->
             <div class="overflow-auto w-full">
-                <table class="w-full border-collapse border border-gray-300 overflow-visible">
-                    <thead id="tableHeader" class="bg-[#C15E15] text-white text-center"></thead>
-                    <tbody id="taskTableBody" class="text-gray-700"></tbody>
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-[#C15E15] text-white text-center">
+                            <th class="p-3 border">No</th>
+                            <th class="p-3 border">Nama Tugas</th>
+                            <th class="p-3 border">Deskripsi Tugas</th>
+                            <th class="p-3 border">Penugas</th>
+                            <th class="p-3 border">Dibuat</th>
+                            <th class="p-3 border">Tenggat</th>
+                            <th class="p-3 border">Penerima Tugas</th>
+                            <th class="p-3 border">Rincian Tugas</th>
+                            <th class="p-3 border">Catatan</th>
+                            <th class="p-3 border">Waktu Penyelesaian</th>
+                            <th class="p-3 border">Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <% 
+                        function formatDateTime(isoString, adjustTimezone = false) {
+                            if (!isoString || isoString === '-') return { time: '-', date: '' };
+                            
+                            const date = new Date(isoString);
+                            if (adjustTimezone) {
+                                date.setHours(date.getHours() + 7);
+                            }
+                            
+                            const timePart = date.toTimeString().split(' ')[0].slice(0, 5);
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            
+                            return {
+                                time: timePart,
+                                date: `${day}/${month}/${year}`
+                            };
+                        }
+
+                        function groupByStaff(task) {
+                            const staffMap = new Map();
+                            
+                            task.namaStaff.forEach((staff, index) => {
+                                if (!staffMap.has(staff)) {
+                                    staffMap.set(staff, []);
+                                }
+                                staffMap.get(staff).push({
+                                    taskBreakdown: task.taskBreakdown[index],
+                                    taskNote: task.taskNote[index],
+                                    submitTime: task.submitTime[index],
+                                    submitTask: task.submitTask[index],
+                                    feedback: task.feedback[index]
+                                });
+                            });
+
+                            return Array.from(staffMap.entries()).map(([staff, details]) => ({
+                                staff,
+                                details
+                            }));
+                        }
+
+                        tasks.forEach((task, taskIndex) => {
+                            const groupedByStaff = groupByStaff(task);
+                            let totalBreakdowns = 0;
+                            groupedByStaff.forEach(group => {
+                                totalBreakdowns += group.details.length;
+                            });
+                        %>
+                            <% groupedByStaff.forEach((staffGroup, staffIndex) => { %>
+                                <% staffGroup.details.forEach((detail, detailIndex) => { %>
+                                    <tr class="border hover:bg-gray-50">
+                                        <% if (staffIndex === 0 && detailIndex === 0) { %>
+                                            <!-- Merged cells for task-level information -->
+                                            <td class="p-2 border text-center" rowspan="<%= totalBreakdowns %>">
+                                                <%= taskIndex + 1 %>
+                                            </td>
+                                            <td class="p-2 border" rowspan="<%= totalBreakdowns %>">
+                                                <%= task.taskName %>
+                                            </td>
+                                            <td class="p-2 border" rowspan="<%= totalBreakdowns %>">
+                                                <%= task.taskDesc %>
+                                            </td>
+                                            <td class="p-2 border text-center" rowspan="<%= totalBreakdowns %>">
+                                                <%= task.assignor %>
+                                            </td>
+                                            <td class="p-2 border text-center" rowspan="<%= totalBreakdowns %>">
+                                                <% const created = formatDateTime(task.createdAt) %>
+                                                <div><%= created.time %></div>
+                                                <div class="text-sm"><%= created.date %></div>
+                                            </td>
+                                            <td class="p-2 border text-center" rowspan="<%= totalBreakdowns %>">
+                                                <% const deadline = formatDateTime(task.deadline) %>
+                                                <div><%= deadline.time %></div>
+                                                <div class="text-sm"><%= deadline.date %></div>
+                                            </td>
+                                        <% } %>
+                                        
+                                        <% if (detailIndex === 0) { %>
+                                            <!-- Merged cells for staff name -->
+                                            <td class="p-2 border text-center" rowspan="<%= staffGroup.details.length %>">
+                                                <span><%= staffGroup.staff %></span>
+                                            </td>
+                                        <% } %>
+
+                                        <!-- Individual breakdown details -->
+                                        <td class="p-2 border"><%= detail.taskBreakdown %></td>
+                                        <td class="p-2 border text-center"><%= detail.taskNote %></td>
+                                        <td class="p-2 border text-center">
+                                            <% if (detail.submitTime && detail.submitTime !== '-') { %>
+                                                <% const submitTime = formatDateTime(detail.submitTime) %>
+                                                <div><%= submitTime.time %></div>
+                                                <div class="text-sm"><%= submitTime.date %></div>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </td>
+                                        <td class="p-2 border text-center"><%= detail.feedback %></td>
+                                    </tr>
+                                <% }); %>
+                            <% }); %>
+                        <% }); %>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <%- include('../layout/footer') %>
+
     <script>
-        const dropdownButton = document.getElementById("dropdownButton");
-        const dropdownMenu = document.getElementById("dropdownMenu");
-        const dropdownText = document.getElementById("dropdownText");
-        const tableHeader = document.getElementById("tableHeader");
-        const taskTableBody = document.getElementById("taskTableBody");
+        // Add this script at the bottom of your riwayat.ejs file
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownText = document.getElementById('dropdownText');
 
-        dropdownButton.addEventListener("click", function (event) {
-            event.stopPropagation();
-            dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
+        // Set initial dropdown text based on URL parameter or default
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentType = urlParams.get('type') || 'Tugas';
+        dropdownText.textContent = currentType;
+
+        // Toggle dropdown menu
+        dropdownButton.addEventListener('click', () => {
+            const isVisible = dropdownMenu.style.display === 'block';
+            dropdownMenu.style.display = isVisible ? 'none' : 'block';
         });
 
-        document.querySelectorAll(".dropdown-item").forEach(item => {
-            item.addEventListener("click", function () {
-                const selectedType = this.getAttribute("data-type");
-                dropdownText.textContent = selectedType;
-                dropdownMenu.style.display = "none";
-                updateTable(selectedType);
+        // Handle dropdown item selection
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const type = item.getAttribute('data-type');
+                dropdownText.textContent = type;
+                dropdownMenu.style.display = 'none';
+                
+                // Update URL and reload page with new type
+                const url = new URL(window.location.href);
+                url.searchParams.set('type', type);
+                window.location.href = url.toString();
             });
         });
 
-        document.addEventListener("click", function (event) {
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
             if (!dropdownButton.contains(event.target)) {
-                dropdownMenu.style.display = "none";
+                dropdownMenu.style.display = 'none';
             }
         });
-
-        const tugasData = [
-            {
-                namaTugas: "Laporan Keuangan Q1",
-                deskripsiTugas: "Membuat laporan keuangan triwulan pertama",
-                penugas: "Kepala Bappeda",
-                deadline: { time: "17:00", date: "2024-03-10" },
-                createdAt: { time: "08:30", date: "2024-02-01" },
-                rincian: [
-                    { rincian: "Pengumpulan data", keterangan: "Diberikan" },
-                    { rincian: "Analisis keuangan", keterangan: "Revisi" },
-                    { rincian: "Penyusunan laporan", keterangan: "Selesai" }
-                ]
-            }
-        ];
-
-        const penugasanData = [
-            {
-                namaTugas: "Sosialisasi Program",
-                deskripsiTugas: "Menyusun materi sosialisasi",
-                penugas: "Bappeda",
-                deadline: { time: "15:00", date: "2024-03-15" },
-                createdAt: { time: "09:00", date: "2024-02-05" },
-                status: "Dalam Proses",
-                rincian: [
-                    { rincian: "Pembuatan Slide", keterangan: "Diberikan" },
-                    { rincian: "Cetak Brosur", keterangan: "Revisi" }
-                ]
-            }
-        ];
-
-        function updateTable(type) {
-            taskTableBody.innerHTML = "";
-
-            let data = type === "Tugas" ? tugasData : penugasanData;
-            
-            tableHeader.innerHTML = `
-                <tr>
-                    <th class="p-3 border">No</th>
-                    <th class="p-3 border">Nama Tugas</th>
-                    <th class="p-3 border">Deskripsi Tugas</th>
-                    <th class="p-3 border">Penugas</th>
-                    <th class="p-3 border">Deadline</th>
-                    <th class="p-3 border">Created at</th>
-                    ${type === "Penugasan" ? '<th class="p-3 border">Status</th>' : ""}
-                    <th class="p-3 border">Rincian Tugas</th>
-                    <th class="p-3 border">Keterangan</th>
-                </tr>`;
-
-            data.forEach((task, index) => {
-                task.rincian.forEach((rincian, rincianIndex) => {
-                    taskTableBody.innerHTML += `
-                        <tr class="border">
-                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${index + 1}</td>` : ""}
-                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.namaTugas}</td>` : ""}
-                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.deskripsiTugas}</td>` : ""}
-                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.penugas}</td>` : ""}
-                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">
-                                ${task.deadline.time} <br> <span class="text-sm">${task.deadline.date}</span>
-                            </td>` : ""}
-                            ${rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">
-                                ${task.createdAt.time} <br> <span class="text-sm">${task.createdAt.date}</span>
-                            </td>` : ""}
-                            ${type === "Penugasan" && rincianIndex === 0 ? `<td class="p-3 border" rowspan="${task.rincian.length}">${task.status}</td>` : ""}
-                            <td class="p-3 border">${rincian.rincian}</td>
-                            <td class="p-3 border">${rincian.keterangan}</td>
-                        </tr>`;
-                });
-            });
-        }
-
-        updateTable("Tugas");
     </script>
-
 </body>
 </html>

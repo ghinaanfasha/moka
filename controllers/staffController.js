@@ -233,7 +233,7 @@ const updateTaskProgress = async (req, res) => {
                 updateData.taskStatus = taskStatus;
 
                 if (taskStatus === 'Revisi') {
-                    updateData.breakdownStatus = 'Belum Selesai';
+                    updateData.breakdownStatus = 'Belum selesai';
                     updateData.submitTime = null; 
                 }
             }
@@ -267,12 +267,10 @@ const showDaftarTugas = async (req, res) => {
             ]
         });
 
+        // Find all task breakdowns for the user
         const taskBreakdowns = await TaskBreakdown.findAll({
             where: { 
-                assigneeID: req.user.userID,
-                taskStatus: {
-                    [Op.ne]: 'Selesai' 
-                }
+                assigneeID: req.user.userID
             },
             include: [
                 {
@@ -290,6 +288,7 @@ const showDaftarTugas = async (req, res) => {
             order: [[{ model: Task, as: 'task' }, 'createdAt', 'DESC']]
         });
 
+        // Group tasks and their breakdowns
         const groupedTasks = taskBreakdowns.reduce((acc, breakdown) => {
             const taskID = breakdown.task.taskID;
             if (!acc[taskID]) {
@@ -304,19 +303,22 @@ const showDaftarTugas = async (req, res) => {
                     readAt: breakdown.readAt
                 };
             }
-            if (breakdown.taskStatus !== 'Selesai') {
-                acc[taskID].rincianTugas.push({
-                    taskBreakdownID: breakdown.taskBreakdownID,
-                    rincian: breakdown.taskBreakdown,
-                    keterangan: breakdown.taskStatus,
-                    status: breakdown.readStatus
-                });
-            }
+            // Include all breakdowns initially
+            acc[taskID].rincianTugas.push({
+                taskBreakdownID: breakdown.taskBreakdownID,
+                rincian: breakdown.taskBreakdown,
+                keterangan: breakdown.taskStatus,
+                status: breakdown.readStatus
+            });
             return acc;
         }, {});
 
+        // Filter out tasks where ALL breakdowns are 'Selesai'
         const filteredGroupedTasks = Object.entries(groupedTasks)
-            .filter(([_, task]) => task.rincianTugas.length > 0)
+            .filter(([_, task]) => {
+                // Keep task if at least one breakdown is not 'Selesai'
+                return !task.rincianTugas.every(breakdown => breakdown.keterangan === 'Selesai');
+            })
             .reduce((acc, [key, value]) => {
                 acc[key] = value;
                 return acc;
@@ -335,7 +337,11 @@ const showDaftarTugas = async (req, res) => {
             status: task.rincianTugas[0].status
         }));
 
-        console.log('Filtered Task IDs:', formattedTasks.map(t => ({ taskID: t.taskID, no: t.no })));
+        console.log('Filtered Task IDs:', formattedTasks.map(t => ({ 
+            taskID: t.taskID, 
+            no: t.no,
+            breakdownStatuses: t.rincianTugas.map(r => r.keterangan)
+        })));
 
         res.render('staff/daftarTugas', {
             user: {
@@ -465,7 +471,7 @@ const showFormProgresTugas = async (req, res) => {
             breakdowns: task.breakdowns.map(breakdown => ({
                 id: breakdown.taskBreakdownID,
                 rincian: breakdown.taskBreakdown,
-                breakdownStatus: breakdown.breakdownStatus || 'Belum Selesai', // Menggunakan breakdownStatus
+                breakdownStatus: breakdown.breakdownStatus || 'Belum selesai', // Menggunakan breakdownStatus
                 taskStatus: breakdown.taskStatus,
                 submitFile: breakdown.submitTask,
                 submitTime: breakdown.submitTime,
@@ -542,7 +548,7 @@ const showFormUpdateTugas = async (req, res) => {
             deadline: task.deadline.getTime(),
             taskFile: task.taskFile,
             rincian: task.breakdowns[0].taskBreakdown,
-            breakdownStatus: task.breakdowns[0].breakdownStatus || 'Belum Selesai',
+            breakdownStatus: task.breakdowns[0].breakdownStatus || 'Belum selesai',
             submitFile: task.breakdowns[0].submitTask,
             taskNote: task.breakdowns[0].taskNote,
             feedback: task.breakdowns[0].feedback,
@@ -974,28 +980,121 @@ const showRiwayat = async (req, res) => {
             include: [{ model: Role, as: 'role' }]
         });
 
-        const tasks = await Task.findAll({
-            where: { assignorID: req.user.userID },
-            include: [
-                {
-                    model: TaskBreakdown,
-                    as: 'breakdowns',
+        const viewType = req.query.type || 'Tugas';
+
+        let tasksQuery = {};
+
+        if (viewType === 'Tugas') {
+             if (role.role.roleName === 'Kepala Bidang') {
+                const divisionUsers = await User.findAll({
+                    where: { deptID: role.deptID },
+                    attributes: ['userID']
+                });
+
+                const programmer = await User.findOne({
+                    include: [{
+                        model: Dept,
+                        as: 'dept',
+                        where: { deptName: 'PROGRAMMER' }
+                    }],
+                    attributes: ['userID']
+                });
+
+                const allowedAssignorIds = [
+                    ...divisionUsers.map(user => user.userID),
+                    programmer ? programmer.userID : null
+                ].filter(id => id !== null);
+
+                tasksQuery = {
+                    where: {
+                        assignorID: {
+                            [Op.in]: allowedAssignorIds
+                        }
+                    },
                     include: [
                         {
                             model: User,
-                            as: 'assignee',
+                            as: 'assignor',
                             attributes: ['username']
+                        },
+                        {
+                            model: TaskBreakdown,
+                            as: 'breakdowns',
+                            include: [
+                                {
+                                    model: User,
+                                    as: 'assignee',
+                                    attributes: ['username']
+                                }
+                            ]
                         }
-                    ],
-                    where: {
-                        taskStatus: 'Selesai' 
+                    ]
+                };
+            } else {
+                tasksQuery = {
+                    where: { assignorID: req.user.userID },
+                    include: [
+                        {
+                            model: User,
+                            as: 'assignor',
+                            attributes: ['username']
+                        },
+                        {
+                            model: TaskBreakdown,
+                            as: 'breakdowns',
+                            include: [
+                                {
+                                    model: User,
+                                    as: 'assignee',
+                                    attributes: ['username']
+                                }
+                            ]
+                        }
+                    ]
+                };
+            }
+        } else {
+            tasksQuery = {
+                include: [
+                    {
+                        model: User,
+                        as: 'assignor',
+                        attributes: ['username']
+                    },
+                    {
+                        model: TaskBreakdown,
+                        as: 'breakdowns',
+                        where: {
+                            assigneeID: req.user.userID,
+                            taskStatus: 'Selesai'
+                        },
+                        include: [
+                            {
+                                model: User,
+                                as: 'assignee',
+                                attributes: ['username']
+                            }
+                        ]
                     }
-                }
-            ],
-            order: [['createdAt', 'DESC']] 
+                ]
+            };
+        }
+
+        tasksQuery.order = [['createdAt', 'DESC']];
+        
+        const tasks = await Task.findAll(tasksQuery);
+
+        const completedTasks = tasks.filter(task => {
+            const breakdowns = task.breakdowns || [];
+            if (viewType === 'Tugas') {
+                return breakdowns.length > 0 && breakdowns.every(bd => bd.taskStatus === 'Selesai');
+            } else {
+
+                return breakdowns.length > 0;
+            }
         });
 
-        const formattedTasks = tasks.map(task => {
+        const formattedTasks = completedTasks.map(task => {
             const breakdowns = task.breakdowns || [];
             const totalBreakdowns = breakdowns.length;
             const completedBreakdowns = breakdowns.filter(bd => bd.breakdownStatus === 'Selesai').length;
@@ -1005,6 +1104,7 @@ const showRiwayat = async (req, res) => {
                 taskID: task.taskID,
                 taskName: task.taskName,
                 taskDesc: task.taskDesc,
+                assignor: task.assignor.username,
                 createdAt: task.createdAt,
                 deadline: task.deadline,
                 namaStaff: breakdowns.map(bd => bd.assignee.username),
@@ -1015,7 +1115,8 @@ const showRiwayat = async (req, res) => {
                 keterangan: breakdowns.map(bd => bd.taskStatus),
                 feedback: breakdowns.map(bd => bd.feedback || '-'),
                 taskNote: breakdowns.map(bd => bd.taskNote || '-'),
-                submitTask: breakdowns.map(bd => bd.submitTask || '-')
+                submitTask: breakdowns.map(bd => bd.submitTask || '-'),
+                taskBreakdown: breakdowns.map(bd => bd.taskBreakdown || '-')
             };
         });
 
@@ -1025,7 +1126,8 @@ const showRiwayat = async (req, res) => {
                 jabatan: role.role ? role.role.roleName : ''
             },
             currentPage: '/staff/riwayat',
-            tasks: formattedTasks
+            tasks: formattedTasks,
+            viewType: viewType
         });
 
     } catch (error) {
