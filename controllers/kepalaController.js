@@ -232,7 +232,7 @@ const updateTaskProgress = async (req, res) => {
                 updateData.taskStatus = taskStatus;
 
                 if (taskStatus === 'Revisi') {
-                    updateData.breakdownStatus = 'Belum Selesai';
+                    updateData.breakdownStatus = 'Belum selesai';
                     updateData.submitTime = null; 
                 }
             }
@@ -528,9 +528,13 @@ const showRiwayat = async (req, res) => {
             include: [{ model: Role, as: 'role' }]
         });
 
-        const tasks = await Task.findAll({
-            where: { assignorID: req.user.userID },
+        tasksQuery = {
             include: [
+                {
+                    model: User,
+                    as: 'assignor',
+                    attributes: ['username']
+                },
                 {
                     model: TaskBreakdown,
                     as: 'breakdowns',
@@ -540,17 +544,21 @@ const showRiwayat = async (req, res) => {
                             as: 'assignee',
                             attributes: ['username']
                         }
-                    ],
-                    where: {
-                        taskStatus: 'Selesai' 
-                    }
+                    ]
                 }
-            ],
-            order: [['createdAt', 'DESC']] 
+            ]
+        };
+
+        tasksQuery.order = [['createdAt', 'DESC']];
+        
+        const tasks = await Task.findAll(tasksQuery);
+
+        const completedTasks = tasks.filter(task => {
+            const breakdowns = task.breakdowns || [];
+            return breakdowns.length > 0 && breakdowns.every(bd => bd.taskStatus === 'Selesai');
         });
 
-        // Format the tasks data
-        const formattedTasks = tasks.map(task => {
+        const formattedTasks = completedTasks.map(task => {
             const breakdowns = task.breakdowns || [];
             const totalBreakdowns = breakdowns.length;
             const completedBreakdowns = breakdowns.filter(bd => bd.breakdownStatus === 'Selesai').length;
@@ -560,6 +568,7 @@ const showRiwayat = async (req, res) => {
                 taskID: task.taskID,
                 taskName: task.taskName,
                 taskDesc: task.taskDesc,
+                assignor: task.assignor.username,
                 createdAt: task.createdAt,
                 deadline: task.deadline,
                 namaStaff: breakdowns.map(bd => bd.assignee.username),
@@ -570,7 +579,8 @@ const showRiwayat = async (req, res) => {
                 keterangan: breakdowns.map(bd => bd.taskStatus),
                 feedback: breakdowns.map(bd => bd.feedback || '-'),
                 taskNote: breakdowns.map(bd => bd.taskNote || '-'),
-                submitTask: breakdowns.map(bd => bd.submitTask || '-')
+                submitTask: breakdowns.map(bd => bd.submitTask || '-'),
+                taskBreakdown: breakdowns.map(bd => bd.taskBreakdown || '-')
             };
         });
 

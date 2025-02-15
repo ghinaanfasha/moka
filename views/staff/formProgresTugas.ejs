@@ -180,12 +180,21 @@
                                 <td class="p-2 border text-center"><%= breakdown.feedback || '-' %></td>
                                 <td class="p-2 border flex justify-center">
                                     <a href="/staff/updateTugas/<%= task.id %>/<%= breakdown.id %>" 
-                                    class="bg-green-500 p-2 rounded-full hover:bg-green-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                       class="<%= breakdown.taskStatus === 'Selesai' ? 
+                                           'bg-gray-400 cursor-not-allowed' : 
+                                           'bg-green-500 hover:bg-green-700' %> 
+                                           p-2 rounded-full transition-colors duration-200"
+                                       <%= breakdown.taskStatus === 'Selesai' ? 'onclick="return false"' : '' %>
+                                       <%= breakdown.taskStatus === 'Selesai' ? 'tabindex="-1"' : '' %>
+                                       title="<%= breakdown.taskStatus === 'Selesai' ? 'Tugas telah selesai' : 'Update tugas' %>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" 
+                                             class="h-5 w-5 text-white <%= breakdown.taskStatus === 'Selesai' ? 'opacity-50' : '' %>" 
+                                             viewBox="0 0 24 24" 
+                                             fill="currentColor">
                                             <path d="M4 21v-4l14-14 4 4-14 14H4zm2-2h2l11-11-2-2-11 11v2z"/>
                                         </svg>
                                     </a>
-                                </td>                           
+                                </td>                       
                             </tr>
                         <% }); %>
                     </tbody>
