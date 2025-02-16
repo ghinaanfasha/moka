@@ -9,6 +9,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
     <!-- Import SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 40;
+        }
+        
+        /* Mengatur z-index SweetAlert lebih tinggi dari footer */
+        .swal2-container {
+            z-index: 9999 !important;
+        }
+        
+        /* Memastikan konten utama tidak tertutup footer */
+        .content-wrapper {
+            padding-bottom: 60px; /* Sesuaikan dengan tinggi footer */
+        }
+    </style>
 </head>
 <body class="h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
     
@@ -16,7 +34,7 @@
     <%- include('../layout/navStaf') %>
     
     <!-- Kontainer Utama -->
-    <div class="flex-grow flex-justify-center items-start mt-[80px] mx-[20px]">
+    <div class="content-wrapper flex-grow flex-justify-center items-start mt-[80px] mx-[20px]">
         <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg ">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-[#C15E15]">Tugas</h2>
@@ -160,11 +178,11 @@
 
                                             <td class="p-2 border" rowspan="<%= totalRows %>">
                                                 <div class="flex items-center justify-center space-x-2">
-                                                    <a href="../admin/formEditTask/<%= task.taskID %>" 
+                                                    <a href="/staff/edit-task/<%= task.taskID %>" 
                                                     class="bg-green-500 p-2 rounded-full hover:bg-green-700 flex items-center justify-center">
                                                         <ion-icon name="pencil-outline" class="text-white text-lg"></ion-icon>
                                                     </a>
-                                                    <button onclick="openDeleteModal('<%= task.taskID %>')" 
+                                                    <button onclick="deleteTask('<%= task.taskID %>')"
                                                             class="bg-red-500 p-2 rounded-full hover:bg-blue-700 flex items-center justify-center">
                                                         <ion-icon name="trash-outline" class="text-white text-lg"></ion-icon>
                                                     </button>
@@ -184,11 +202,12 @@
             </div>
         </div>
     </div>
-     <!-- Footer -->
-     <%- include('../layout/footer') %>
+    <footer class="footer">
+        <%- include('../layout/footer') %>
+    </footer>
 
-     <script>
-        function openDeleteModal(taskId) {
+    <script>
+        function deleteTask(taskId) {
             Swal.fire({
                 title: "Konfirmasi Hapus",
                 text: "Apakah Anda yakin ingin menghapus tugas ini?",
@@ -199,9 +218,46 @@
                 confirmButtonText: "Ya, Hapus",
                 cancelButtonText: "Batal",
                 heightAuto: false
-            }).then((result) => {
+            }).then(async (result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "/admin/deleteTask/" + taskId;
+                    try {
+                        const response = await fetch(`/staff/delete-task/${taskId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'include'
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            if (response.status === 401) {
+                                window.location.href = '/';
+                                return;
+                            }
+                            throw new Error(data.message || 'Gagal menghapus tugas');
+                        }
+
+                        await Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Tugas berhasil dihapus',
+                            confirmButtonColor: '#C15E15'
+                        });
+
+                        // Refresh halaman atau update UI
+                        window.location.reload();
+
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: error.message || 'Terjadi kesalahan saat menghapus tugas',
+                            confirmButtonColor: '#C15E15'
+                        });
+                    }
                 }
             });
         }
