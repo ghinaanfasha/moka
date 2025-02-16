@@ -1,11 +1,13 @@
 const express = require('express');
 const authMiddleware = require('../middleware/authMiddleware.js');
+const upload = require('../middleware/upload.js');
 
 const { getUser, 
     showTugas, showTaskProgress, updateTaskProgress,
     showDaftarTugas, updateReadStatus, showFormProgresTugas, 
     showFormUpdateTugas, updateBreakdownStatus, downloadSubmission,
-    showFormAddTugas, getStaffForAssignment,
+    showFormAddTugas, getStaffForAssignment, addTask,
+    getTaskForEdit, editTask, deleteTask,
     showRiwayat
 } = require('../controllers/staffController'); 
 
@@ -54,6 +56,10 @@ staffRouter.get('/formAddTugas', authMiddleware, checkStaffRole, showFormAddTuga
     }
 });
 staffRouter.get('/get-staff-for-assignment', authMiddleware, checkStaffRole, getStaffForAssignment);
+staffRouter.post('/add-task', upload.single('dokumen'), authMiddleware, checkStaffRole, addTask);
+staffRouter.get('/edit-task/:taskId', authMiddleware, checkStaffRole, getTaskForEdit);
+staffRouter.post('/edit-task/:taskId', upload.single('dokumen'), authMiddleware, checkStaffRole, editTask);
+staffRouter.delete('/delete-task/:taskId', authMiddleware, checkStaffRole, deleteTask);
 staffRouter.get('/download-submission/:taskID/:breakdownID', (req, res, next) => {
     console.log('Download route hit with params:', req.params);
     downloadSubmission(req, res, next);

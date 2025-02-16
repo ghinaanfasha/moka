@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Tugas</title>
+    <script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-cover bg-center pt-[60px]" style="background-image: url('/images/bg_moka.png');">
+    <!-- Navbar -->
+    <%- include('../layout/navKepala') %>
+    
+    <!-- Back Button -->
+    <a href="/kepala/tugas" class="absolute left-10 top-[110px] flex items-center text-[#C15E15] hover:text-[#A14B10]">
+        <ion-icon name="arrow-back-outline" class="text-3xl mr-2"></ion-icon>
+        <span class="text-lg font-medium">Kembali</span>
+    </a>
+
+    <!-- Main Form Container -->
+    <form id="editTaskForm" class="flex flex-col space-y-6" method="POST" enctype="multipart/form-data">
+        <div class="flex justify-center items-start mt-[90px]">
+            <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-[#C15E15]">Edit Tugas</h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-10 relative">
+                    <div class="absolute inset-y-0 left-1/2 w-0.5 bg-gray-300"></div>
+                    
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nama Tugas</label>
+                            <input type="text" value="<%= task.taskName %>" disabled
+                                class="w-full p-4 border border-gray-300 rounded-md bg-gray-100">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Staff yang Ditugaskan</label>
+                            <div class="space-y-2">
+                                <% task.breakdowns.forEach(function(breakdown) { %>
+                                    <div class="p-3 bg-gray-100 rounded-md">
+                                        <%= breakdown.assignee.username %> 
+                                        (<%= breakdown.assignee.role.roleName %> - <%= breakdown.assignee.dept.deptName %>)
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tanggal & Jam Pengumpulan <span class="text-red-500">*</span></label>
+                            <div class="flex space-x-4">
+                                <input type="date" name="tanggal_pengumpulan" required 
+                                    value="<%= task.deadline.toISOString().split('T')[0] %>"
+                                    class="w-1/2 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                                <input type="time" name="jam_pengumpulan" required 
+                                    value="<%= task.deadline.toTimeString().split(' ')[0].slice(0, 5) %>"
+                                    class="w-1/2 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Deskripsi Tugas <span class="text-red-500">*</span></label>
+                            <textarea name="deskripsi" rows="4" required 
+                                class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent"><%= task.taskDesc %></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Upload Dokumen Baru</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="file" name="dokumen" 
+                                    class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                            </div>
+                            <% if (task.taskFile) { %>
+                                <p class="text-sm text-gray-500 mt-1">File saat ini: <%= task.taskFile %></p>
+                            <% } %>
+                            <p class="text-sm text-gray-500 mt-1">Format yang didukung: PDF, Word, Excel, PowerPoint</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Breakdowns -->
+        <div class="flex justify-center items-start">
+            <div class="bg-white bg-opacity-90 rounded-[10px] p-8 shadow-lg w-[1229px]">
+                <h3 class="text-xl font-bold text-[#C15E15] mb-6">Rincian Tugas per Staff</h3>
+                
+                <div id="breakdownsContainer" class="space-y-6">
+                    <% task.breakdowns.forEach(function(breakdown) { %>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <h4 class="font-bold mb-4">Rincian untuk <%= breakdown.assignee.username %></h4>
+                            <input type="hidden" name="breakdown_ids[]" value="<%= breakdown.taskBreakdownID %>">
+                            <input type="text" 
+                                name="rincian_<%= breakdown.taskBreakdownID %>" 
+                                value="<%= breakdown.taskBreakdown %>"
+                                required
+                                class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end mt-6">
+                    <button type="submit"
+                        class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-4 rounded-lg">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C15E15]"></div>
+            <p class="mt-2 text-[#C15E15]">Memproses...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('../layout/footer') %>
+
+    <!-- Sweet Alert for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Frontend JavaScript -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editTaskForm = document.getElementById('editTaskForm');
+        
+        editTaskForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            try {
+                // Validate form
+                const errorMessage = validateForm();
+                if (errorMessage) {
+                    throw new Error(errorMessage);
+                }
+
+                // Collect all breakdowns
+                const breakdownElements = document.querySelectorAll('[name^="rincian_"]');
+                const breakdowns = Array.from(breakdownElements).map(element => ({
+                    taskBreakdownID: element.name.split('_')[1],
+                    rincian: element.value.trim()
+                }));
+
+                // Create FormData
+                const formData = new FormData(this);
+                formData.append('task_breakdowns', JSON.stringify(breakdowns));
+
+                const taskId = '<%= task.taskID %>'; // Get from EJS template
+                const response = await fetch(`/kepala/edit-task/${taskId}`, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    const result = await response.json();
+                    if (response.status === 401) {
+                        throw new Error('Sesi telah berakhir. Silakan login kembali.');
+                    }
+                    throw new Error(result.message || 'Gagal memperbarui tugas');
+                }
+
+                const result = await response.json();
+                console.log("Server response:", result);
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Tugas berhasil diperbarui',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#C15E15',
+                });
+
+                window.location.href = '/kepala/tugas';
+
+            } catch (error) {
+                console.error('Error:', error);
+                if (error.message.includes('login')) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: error.message || 'Terjadi kesalahan saat memperbarui tugas',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#C15E15',
+                });
+            } finally {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
+        });
+
+        function validateForm() {
+            const deskripsi = document.querySelector('textarea[name="deskripsi"]').value.trim();
+            const tanggalPengumpulan = document.querySelector('input[name="tanggal_pengumpulan"]').value;
+            const jamPengumpulan = document.querySelector('input[name="jam_pengumpulan"]').value;
+            
+            if (!deskripsi) return "Deskripsi tugas harus diisi";
+            if (!tanggalPengumpulan) return "Tanggal Pengumpulan harus diisi";
+            if (!jamPengumpulan) return "Jam Pengumpulan harus diisi";
+
+            const deadline = new Date(`${tanggalPengumpulan}T${jamPengumpulan}`);
+            if (deadline < new Date()) {
+                return "Deadline tidak boleh di masa lalu";
+            }
+
+            // Validate all rincian inputs
+            const rincianInputs = document.querySelectorAll('[name^="rincian_"]');
+            for (const input of rincianInputs) {
+                if (!input.value.trim()) {
+                    return "Semua rincian tugas harus diisi";
+                }
+            }
+
+            return "";
+        }
+    });
+    </script>
+</body>
+</html>
+
+
+
+
+

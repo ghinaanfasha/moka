@@ -425,8 +425,13 @@ const getStaffForAssignment = async (req, res) => {
 };
 
 const addTask = async (req, res) => {
-    const t = await sequelize.transaction();    
+    const transaction = await sequelize.transaction();
+    let taskFile = null;
+    
     try {
+        console.log('Form data:', req.body);
+        console.log('File:', req.file);
+
         const {
             nama_tugas,
             deskripsi,
@@ -435,88 +440,311 @@ const addTask = async (req, res) => {
             staff_tasks
         } = req.body;
 
-        if (!nama_tugas || !tanggal_pengumpulan || !jam_pengumpulan || !staff_tasks) {
-            throw new Error('Semua field wajib diisi');
+        if (!nama_tugas?.trim()) throw new Error('Nama tugas harus diisi');
+        if (!deskripsi?.trim()) throw new Error('Deskripsi tugas harus diisi');
+        if (!tanggal_pengumpulan) throw new Error('Tanggal pengumpulan harus diisi');
+        if (!jam_pengumpulan) throw new Error('Jam pengumpulan harus diisi');
+        if (!staff_tasks) throw new Error('Data staff tasks diperlukan');
+
+        if (req.file) {
+            taskFile = req.file.filename;
         }
 
-        const taskFile = req.file ? `/uploads/${req.file.filename}` : null;
-
         const deadline = new Date(`${tanggal_pengumpulan}T${jam_pengumpulan}`);
-
         if (isNaN(deadline.getTime())) {
             throw new Error('Format tanggal atau jam tidak valid');
         }
-        
-        if (deadline < new Date()) {
-            throw new Error('Deadline tidak boleh di masa lalu');
-        }
 
         const task = await Task.create({
-            taskName: nama_tugas,
-            taskDesc: deskripsi || '',
+            assignorID: req.user.userID,
+            taskName: nama_tugas.trim(),
+            taskDesc: deskripsi.trim(),
             taskFile: taskFile,
             deadline: deadline,
-            assignorID: req.user.userID,
-            status: 'Active',
             createdAt: new Date(),
             updatedAt: new Date()
-        }, { transaction: t });
-        const staffTasks = JSON.parse(staff_tasks);
+        }, { transaction });
 
-        if (!Array.isArray(staffTasks)) {
-            throw new Error('Format staff_tasks tidak valid');
+        let staffTasksData;
+        try {
+            staffTasksData = JSON.parse(staff_tasks);
+        } catch (error) {
+            console.error('Error parsing staff_tasks:', error);
+            throw new Error('Format data staff tasks tidak valid');
         }
 
-        const breakdownPromises = [];
-        for (const { staffId, rincian } of staffTasks) {
-            if (!Array.isArray(rincian)) {
-                throw new Error('Format rincian tidak valid');
-            }
-
-            for (const breakdown of rincian) {
-                if (!breakdown.trim()) {
-                    throw new Error('Rincian tugas tidak boleh kosong');
-                }
-
-                breakdownPromises.push(
-                    TaskBreakdown.create({
-                        taskID: task.taskID,
-                        assigneeID: staffId,
-                        taskBreakdown: breakdown.trim(),
-                        breakdownStatus: 'Diberikan',
-                        readStatus: false,
-                        taskStatus: 'Diberikan',
-                        createdAt: new Date(),
-                        updatedAt: new Date()
-                    }, { transaction: t })
-                );
-            }
+        if (!Array.isArray(staffTasksData) || staffTasksData.length === 0) {
+            throw new Error('Minimal satu staff harus dipilih');
         }
+
+        const breakdownPromises = staffTasksData.flatMap(staffTask => {
+            if (!staffTask.staffId || !Array.isArray(staffTask.rincian)) {
+                throw new Error('Format rincian tugas tidak valid');
+            }
+
+            return staffTask.rincian.map(rincian => 
+                TaskBreakdown.create({
+                    taskID: task.taskID,
+                    assigneeID: staffTask.staffId,
+                    taskBreakdown: rincian.trim(),
+                    breakdownStatus: "Belum selesai",
+                    taskStatus: "Diberikan",
+                    readStatus: "Belum dibaca",
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }, { transaction })
+            );
+        });
 
         await Promise.all(breakdownPromises);
-        await t.commit();
+        await transaction.commit();
 
         res.json({
             success: true,
             message: 'Tugas berhasil ditambahkan',
-            taskId: task.taskID
+            taskID: task.taskID
         });
 
     } catch (error) {
-        await t.rollback();
+        console.error('Error in addTask:', error);
+        await transaction.rollback();
 
-        if (req.file) {
+        if (taskFile && req.file) {
             try {
-                await fs.unlink(path.join(__dirname, '..', 'public', req.file.path));
+                fs.unlinkSync(req.file.path);
             } catch (unlinkError) {
-                console.error('Error deleting file:', unlinkError);
+                console.error('Error deleting uploaded file:', unlinkError);
             }
         }
-        
-        console.error('Error adding task:', error);
+
         res.status(500).json({
             success: false,
             message: error.message || 'Gagal menambahkan tugas'
+        });
+    }
+};
+
+const getTaskForEdit = async (req, res) => {
+    try {
+        const currentUser = await User.findByPk(req.user.userID, {
+            include: [
+                { model: Role, as: 'role', attributes: ['roleName'] },
+                { model: Dept, as: 'dept', attributes: ['deptName'] }
+            ]
+        });
+
+        const userData = {
+            id: currentUser.userID,
+            username: currentUser.username,
+            jabatan: currentUser.role ? currentUser.role.roleName : '-',
+            bidang: currentUser.dept ? currentUser.dept.deptName : '-'
+        };
+
+        const taskId = req.params.taskId;
+        
+        const task = await Task.findOne({
+            where: { taskID: taskId },
+            include: [
+                {
+                    model: TaskBreakdown,
+                    as: 'breakdowns',
+                    include: [
+                        {
+                            model: User,
+                            as: 'assignee',
+                            include: [
+                                { model: Role, as: 'role' },
+                                { model: Dept, as: 'dept' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (!task) {
+            return res.status(404).json({
+                success: false,
+                message: 'Tugas tidak ditemukan'
+            });
+        }
+
+        if (task.assignorID !== req.user.userID) {
+            return res.status(403).json({
+                success: false,
+                message: 'Anda tidak memiliki akses untuk mengedit tugas ini'
+            });
+        }
+
+        res.render('kepala/editTask', {             
+            user: userData,  
+            task,
+            currentPage: '/kepala/tugas' 
+        });
+    } catch (error) {
+        console.error('Error in getTaskForEdit:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Gagal mengambil data tugas'
+        });
+    }
+};
+
+const editTask = async (req, res) => {
+    const transaction = await sequelize.transaction();
+    let taskFile = null;
+    
+    try {
+        const taskId = req.params.taskId;
+
+        const {
+            deskripsi,
+            tanggal_pengumpulan,
+            jam_pengumpulan,
+            task_breakdowns
+        } = req.body;
+
+        if (!deskripsi?.trim()) throw new Error('Deskripsi tugas harus diisi');
+        if (!tanggal_pengumpulan) throw new Error('Tanggal pengumpulan harus diisi');
+        if (!jam_pengumpulan) throw new Error('Jam pengumpulan harus diisi');
+        if (!task_breakdowns) throw new Error('Data rincian tugas diperlukan');
+
+        const existingTask = await Task.findByPk(taskId);
+        if (!existingTask) {
+            throw new Error('Tugas tidak ditemukan');
+        }
+
+        if (req.file) {
+            taskFile = req.file.filename;
+            if (existingTask.taskFile) {
+                const oldFilePath = path.join(__dirname, '../uploads', existingTask.taskFile);
+                if (fs.existsSync(oldFilePath)) {
+                    fs.unlinkSync(oldFilePath);
+                }
+            }
+        }
+
+        const deadline = new Date(`${tanggal_pengumpulan}T${jam_pengumpulan}`);
+        if (isNaN(deadline.getTime())) {
+            throw new Error('Format tanggal atau jam tidak valid');
+        }
+
+        await existingTask.update({
+            taskDesc: deskripsi.trim(),
+            ...(taskFile && { taskFile }),
+            deadline: deadline,
+            updatedAt: new Date()
+        }, { transaction });
+
+        let taskBreakdownsData;
+        try {
+            taskBreakdownsData = JSON.parse(task_breakdowns);
+        } catch (error) {
+            throw new Error('Format data rincian tugas tidak valid');
+        }
+
+        const updatePromises = taskBreakdownsData.map(async (breakdown) => {
+            const taskBreakdown = await TaskBreakdown.findOne({
+                where: { 
+                    taskBreakdownID: breakdown.taskBreakdownID,
+                    taskID: taskId
+                }
+            });
+
+            if (!taskBreakdown) {
+                throw new Error(`Rincian tugas dengan ID ${breakdown.taskBreakdownID} tidak ditemukan`);
+            }
+
+            return taskBreakdown.update({
+                taskBreakdown: breakdown.rincian.trim(),
+                updatedAt: new Date()
+            }, { transaction });
+        });
+
+        await Promise.all(updatePromises);
+        await transaction.commit();
+
+        res.json({
+            success: true,
+            message: 'Tugas berhasil diperbarui',
+            taskID: taskId
+        });
+
+    } catch (error) {
+        console.error('Error in editTask:', error);
+        await transaction.rollback();
+
+        if (req.file) {
+            try {
+                fs.unlinkSync(req.file.path);
+            } catch (unlinkError) {
+                console.error('Error deleting uploaded file:', unlinkError);
+            }
+        }
+
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Gagal memperbarui tugas'
+        });
+    }
+};
+
+const deleteTask = async (req, res) => {
+    const transaction = await sequelize.transaction();
+    
+    try {
+        const taskId = req.params.taskId;
+
+        const task = await Task.findOne({
+            where: { taskID: taskId },
+            include: [{
+                model: TaskBreakdown,
+                as: 'breakdowns'
+            }]
+        });
+
+        if (!task) {
+            throw new Error('Tugas tidak ditemukan');
+        }
+
+        if (task.assignorID !== req.user.userID) {
+            throw new Error('Anda tidak memiliki akses untuk menghapus tugas ini');
+        }
+
+        if (task.taskFile) {
+            try {
+                const filePath = path.join(__dirname, '../uploads', task.taskFile);
+                await fs.stat(filePath);
+                await fs.unlink(filePath);
+            } catch (fileError) {
+                console.error('Error saat menghapus file:', fileError);
+            }
+        }
+
+        if (task.breakdowns && task.breakdowns.length > 0) {
+            await TaskBreakdown.destroy({
+                where: { taskID: taskId },
+                transaction
+            });
+        }
+
+        await task.destroy({ transaction });
+
+        await transaction.commit();
+
+        res.json({
+            success: true,
+            message: 'Tugas berhasil dihapus'
+        });
+
+    } catch (error) {
+        console.error('Error in deleteTask:', error);
+        await transaction.rollback();
+
+        const statusCode = error.message.includes('akses') ? 403 : 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || 'Gagal menghapus tugas'
         });
     }
 };
@@ -605,6 +833,7 @@ const showRiwayat = async (req, res) => {
 module.exports = { 
     getUser, 
     showTugas, showTaskProgress, updateTaskProgress, 
-    showFormAddTugas, getStaffForAssignment, addTask,
+    showFormAddTugas, getStaffForAssignment, addTask, 
+    getTaskForEdit, editTask, deleteTask,
     showRiwayat
 };
