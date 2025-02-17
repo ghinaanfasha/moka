@@ -1,6 +1,6 @@
 # Panduan Menjalankan Aplikasi Web
 
-Aplikasi ini dibangun menggunakan **Node.js** dengan framework **Express.js** dan database **MySQL**. Pengelolaan database menggunakan **XAMPP** (phpMyAdmin) dan **Sequelize CLI** untuk migrasi model dan seeder. Berikut adalah panduan lengkap untuk menjalankan aplikasi ini di lingkungan lokal Anda.
+Aplikasi ini dibangun menggunakan **Node.js** dengan framework **Express.js**, css dengan Tailwind **Preline UI** dan database **MySQL**. Pengelolaan database menggunakan **XAMPP** (phpMyAdmin) dan **Sequelize CLI** untuk migrasi model dan seeder. Berikut adalah panduan lengkap untuk menjalankan aplikasi ini di lingkungan lokal Anda.
 
 ## Prasyarat
 
