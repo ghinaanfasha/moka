@@ -5,7 +5,7 @@ const upload = require('../middleware/upload.js');
 const { getUser, showTugas, showTaskProgress,
         updateTaskProgress, showFormAddTugas, 
         showRiwayat ,getStaffForAssignment, addTask, 
-        getTaskForEdit, editTask, deleteTask,
+        getTaskForEdit, editTask, deleteTask
     } = require('../controllers/kepalaController'); 
 
 const kepalaRouter = express.Router();

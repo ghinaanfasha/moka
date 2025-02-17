@@ -733,80 +733,6 @@ const updateBreakdownStatus = async (req, res) => {
     }
 };
 
-const downloadSubmission = async (req, res) => {
-    try {
-        const { taskID, breakdownID } = req.params;
-        
-        console.log('Download request for:', { taskID, breakdownID }); 
-
-        if (!taskID || !breakdownID) {
-            console.log('Missing taskID or breakdownID');
-            return res.status(400).json({
-                status: 'error',
-                message: 'TaskID dan BreakdownID diperlukan'
-            });
-        }
-
-        const breakdown = await TaskBreakdown.findOne({
-            where: { 
-                taskBreakdownID: breakdownID,
-                taskID: taskID
-            }
-        });
-
-        console.log('Found breakdown:', breakdown); 
-
-        if (!breakdown) {
-            console.log('Breakdown not found');
-            return res.status(404).json({
-                status: 'error',
-                message: 'Task breakdown tidak ditemukan'
-            });
-        }
-
-        if (!breakdown.submitTask) {
-            console.log('No submitTask found');
-            return res.status(404).json({
-                status: 'error',
-                message: 'File tidak ditemukan'
-            });
-        }
-
-        const filePath = path.join(__dirname, '../public/uploads/submissions/', breakdown.submitTask);
-        
-        console.log('File path:', filePath);
-
-        if (!fs.existsSync(filePath)) {
-            console.log('File does not exist at path:', filePath);
-            return res.status(404).json({
-                status: 'error',
-                message: 'File tidak ditemukan di server'
-            });
-        }
-
-        res.setHeader('Content-Type', 'application/octet-stream');
-        res.setHeader('Content-Disposition', `attachment; filename="${breakdown.submitTask}"`);
-
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.on('error', (error) => {
-            console.error('Error streaming file:', error);
-            res.status(500).json({
-                status: 'error',
-                message: 'Gagal membaca file'
-            });
-        });
-
-        fileStream.pipe(res);
-
-    } catch (error) {
-        console.error('Error downloading submission:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Terjadi kesalahan saat mengunduh file'
-        });
-    }
-};
-
 const showFormAddTugas = async (req, res) => {
     try {
         const currentUser = await User.findByPk(req.user.userID, {
@@ -1471,7 +1397,7 @@ module.exports = {
     getUser, 
     showTugas, showTaskProgress, updateTaskProgress, 
     showDaftarTugas, updateReadStatus, showFormProgresTugas, 
-    showFormUpdateTugas, updateBreakdownStatus, downloadSubmission,
+    showFormUpdateTugas, updateBreakdownStatus, 
     showFormAddTugas, getStaffForAssignment, addTask,
     getTaskForEdit, editTask, deleteTask,
     showRiwayat 

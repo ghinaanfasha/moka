@@ -1,10 +1,4 @@
 /*! tailwindcss v4.0.3 | MIT License | https://tailwindcss.com */
-.collapse {
-  visibility: collapse;
-}
-.visible {
-  visibility: visible;
-}
 .absolute {
   position: absolute;
 }
@@ -61,9 +55,6 @@
 }
 .mt-\[30px\] {
   margin-top: 30px;
-}
-.mt-\[50px\] {
-  margin-top: 50px;
 }
 .mt-\[65px\] {
   margin-top: 65px;
@@ -131,11 +122,14 @@
 .w-\[80px\] {
   width: 80px;
 }
-.w-\[120px\] {
-  width: 120px;
-}
 .w-\[130px\] {
   width: 130px;
+}
+.w-\[250px\] {
+  width: 250px;
+}
+.w-\[400px\] {
+  width: 400px;
 }
 .w-\[1229px\] {
   width: 1229px;
@@ -145,12 +139,6 @@
 }
 .w-\[140px\] {
   width: 140px;
-}
-.w-\[250px\] {
-  width: 250px;
-}
-.w-\[400px\] {
-  width: 400px;
 }
 .w-full {
   width: 100%;
@@ -235,9 +223,17 @@
   border-style: var(--tw-border-style);
   border-width: 1px;
 }
+.border-0 {
+  border-style: var(--tw-border-style);
+  border-width: 0px;
+}
 .border-2 {
   border-style: var(--tw-border-style);
   border-width: 2px;
+}
+.border-b {
+  border-bottom-style: var(--tw-border-style);
+  border-bottom-width: 1px;
 }
 .border-b-2 {
   border-bottom-style: var(--tw-border-style);
@@ -294,10 +290,6 @@
 }
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
-}
-.backdrop-filter {
-  -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-  backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
 }
 .transition {
   transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter;
@@ -451,42 +443,6 @@
   inherits: false;
 }
 @property --tw-sepia {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-blur {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-brightness {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-contrast {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-grayscale {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-hue-rotate {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-invert {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-opacity {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-saturate {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-sepia {
   syntax: "*";
   inherits: false;
 }
