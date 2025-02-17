@@ -46,7 +46,7 @@ Setelah semua langkah di atas selesai, Anda dapat menjalankan aplikasi dengan pe
 **npm start**  
 Aplikasi akan berjalan di **http://localhost:3000**. Buka alamat tersebut di browser Anda.
 
-*Jika anda ingin melakukan perubahan maka jalankan aplikasi dalam mode development
+*Jika anda ingin melakukan perubahan maka jalankan aplikasi dalam mode development  
 **npm run dev**
 
 ### 7. Login ke Aplikasi
