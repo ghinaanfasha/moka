@@ -49,11 +49,16 @@
                         <span class="w-[130px] font-medium">Dokumen</span>
                         <span class="mr-2">:</span>
                         <% if (taskData.taskInfo.taskFile) { %>
-                            <a href="/files/<%= taskData.taskInfo.taskFile %>" class="text-blue-500 underline">Download File</a>
+                            <a href="/files/view/<%= encodeURIComponent(taskData.taskInfo.taskFile) %>" 
+                                class="text-blue-500 underline" 
+                                target="_blank" 
+                                rel="noopener noreferrer">
+                                View
+                            </a>
                         <% } else { %>
                             <span>-</span>
                         <% } %>
-                    </div>
+                    </div>       
                     <div class="flex mt-1">
                         <span class="w-[130px] font-medium">Dibuat</span>
                         <span class="mr-2">:</span>
@@ -147,7 +152,12 @@
                                 </td>
                                 <td class="p-1 border text-center">
                                     <% if (breakdown.submitTask) { %>
-                                        <a href="/files/<%= breakdown.submitTask %>" class="text-blue-500 underline">Lihat Dokumen</a>
+                                        <a href="/files/view/<%= encodeURIComponent(breakdown.submitTask) %>?type=submission" 
+                                            class="text-blue-500 underline" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer">
+                                            View
+                                        </a>
                                     <% } else { %>
                                         -
                                     <% } %>

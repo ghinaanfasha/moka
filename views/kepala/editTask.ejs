@@ -39,10 +39,31 @@
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Staff yang Ditugaskan</label>
                             <div class="space-y-2">
-                                <% task.breakdowns.forEach(function(breakdown) { %>
+                                <% 
+                                // Group breakdowns by assignee
+                                const assignees = {};
+                                task.breakdowns.forEach(function(breakdown) {
+                                    const assigneeId = breakdown.assignee.userID;
+                                    if (!assignees[assigneeId]) {
+                                        assignees[assigneeId] = {
+                                            info: breakdown.assignee,
+                                            count: 0
+                                        };
+                                    }
+                                    assignees[assigneeId].count++;
+                                });
+                                
+                                // Display unique staff with breakdown count
+                                Object.values(assignees).forEach(function(assignee) { 
+                                %>
                                     <div class="p-3 bg-gray-100 rounded-md">
-                                        <%= breakdown.assignee.username %> 
-                                        (<%= breakdown.assignee.role.roleName %> - <%= breakdown.assignee.dept.deptName %>)
+                                        <%= assignee.info.username %> 
+                                        (<%= assignee.info.role.roleName %> - <%= assignee.info.dept.deptName %>)
+                                        <% if (assignee.count > 1) { %>
+                                            <span class="ml-2 px-2 py-1 bg-[#C15E15] text-white rounded-full text-xs">
+                                                <%= assignee.count %> tugas
+                                            </span>
+                                        <% } %>
                                     </div>
                                 <% }); %>
                             </div>
@@ -92,15 +113,39 @@
                 <h3 class="text-xl font-bold text-[#C15E15] mb-6">Rincian Tugas per Staff</h3>
                 
                 <div id="breakdownsContainer" class="space-y-6">
-                    <% task.breakdowns.forEach(function(breakdown) { %>
+                    <% 
+                    // Group breakdowns by assignee
+                    const breakdownsByAssignee = {};
+                    task.breakdowns.forEach(function(breakdown) {
+                        const assigneeId = breakdown.assignee.userID;
+                        if (!breakdownsByAssignee[assigneeId]) {
+                            breakdownsByAssignee[assigneeId] = {
+                                assignee: breakdown.assignee,
+                                breakdowns: []
+                            };
+                        }
+                        breakdownsByAssignee[assigneeId].breakdowns.push(breakdown);
+                    });
+                    
+                    // Display breakdowns grouped by assignee
+                    Object.values(breakdownsByAssignee).forEach(function(group) { 
+                    %>
                         <div class="bg-gray-100 p-6 rounded-lg">
-                            <h4 class="font-bold mb-4">Rincian untuk <%= breakdown.assignee.username %></h4>
-                            <input type="hidden" name="breakdown_ids[]" value="<%= breakdown.taskBreakdownID %>">
-                            <input type="text" 
-                                name="rincian_<%= breakdown.taskBreakdownID %>" 
-                                value="<%= breakdown.taskBreakdown %>"
-                                required
-                                class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                            <h4 class="font-bold mb-4">Rincian untuk <%= group.assignee.username %></h4>
+                            
+                            <div class="space-y-4">
+                                <% group.breakdowns.forEach(function(breakdown, index) { %>
+                                    <div class="border-b border-gray-300 pb-4 <%= index === group.breakdowns.length - 1 ? 'border-0' : '' %>">
+                                        <p class="text-sm text-gray-600 mb-2">Tugas #<%= index + 1 %></p>
+                                        <input type="hidden" name="breakdown_ids[]" value="<%= breakdown.taskBreakdownID %>">
+                                        <input type="text" 
+                                            name="rincian_<%= breakdown.taskBreakdownID %>" 
+                                            value="<%= breakdown.taskBreakdown %>"
+                                            required
+                                            class="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C15E15] focus:border-transparent">
+                                    </div>
+                                <% }); %>
+                            </div>
                         </div>
                     <% }); %>
                 </div>
@@ -233,8 +278,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-

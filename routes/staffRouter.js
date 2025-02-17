@@ -5,7 +5,7 @@ const upload = require('../middleware/upload.js');
 const { getUser, 
     showTugas, showTaskProgress, updateTaskProgress,
     showDaftarTugas, updateReadStatus, showFormProgresTugas, 
-    showFormUpdateTugas, updateBreakdownStatus, downloadSubmission,
+    showFormUpdateTugas, updateBreakdownStatus,
     showFormAddTugas, getStaffForAssignment, addTask,
     getTaskForEdit, editTask, deleteTask,
     showRiwayat
@@ -60,11 +60,6 @@ staffRouter.post('/add-task', upload.single('dokumen'), authMiddleware, checkSta
 staffRouter.get('/edit-task/:taskId', authMiddleware, checkStaffRole, getTaskForEdit);
 staffRouter.post('/edit-task/:taskId', upload.single('dokumen'), authMiddleware, checkStaffRole, editTask);
 staffRouter.delete('/delete-task/:taskId', authMiddleware, checkStaffRole, deleteTask);
-staffRouter.get('/download-submission/:taskID/:breakdownID', (req, res, next) => {
-    console.log('Download route hit with params:', req.params);
-    downloadSubmission(req, res, next);
-});
-
 staffRouter.get('/riwayat', authMiddleware, checkStaffRole, showRiwayat, async (req, res) => {
     try {
         await getUser(req, res);

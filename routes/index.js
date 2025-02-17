@@ -7,49 +7,6 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
-router.get('/dashboardStaf', (req, res) => {
-  res.render('staff/dashboard'); 
-});
-router.get('/dashboard', (req, res) => {
-  res.render('kepala/dashboard'); 
-});
-router.get('/formAddTugasStaf', (req, res) => {
-  res.render('staff/formAddTugasStaf'); 
-});
-router.get('/detailTugas', (req, res) => {
-  res.render('staff/detailTugas'); 
-});
-router.get('/infoProgresTugas', (req, res) => {
-  res.render('kepala/infoProgresTugas'); 
-});
-router.get('/staffTugas', (req, res) => {
-  res.render('staff/tugas'); 
-});
-router.get('/formUpdateStatus', (req, res) => {
-  res.render('staff/formUpdateStatus'); 
-});
-router.get('/disposisiTugas', (req, res) => {
-  res.render('staff/disposisiTugas'); 
-});
-router.get('/formProgresTugas', (req, res) => {
-  res.render('staff/formProgresTugas'); 
-});
-router.get('/riwayat', (req, res) => {
-  res.render('staff/riwayat'); 
-});
-router.get('/daftarTugas', (req, res) => {
-  res.render('staff/daftarTugas'); 
-});
-router.get('/formProgres', (req, res) => {
-  res.render('kepala/formProgres'); 
-});
-router.get('/formAddTugas', (req, res) => {
-  res.render('kepala/formAddTugas'); 
-});
-router.get('/profil', (req, res) => {
-  res.render('profil'); 
-});
-
 router.get('/addUser', authMiddleware, async (req, res) => {
   try {
       await getAllUsers(req, res);

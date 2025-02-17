@@ -11,6 +11,8 @@ var adminRouter = require('./routes/adminRouter');
 var kepalaRouter = require('./routes/kepalaRouter');
 var staffRouter = require('./routes/staffRouter');
 var profileRouter = require('./routes/profileRouter');
+var fileRouter = require('./routes/fileRouter');
+
 
 var app = express();
 
@@ -43,6 +45,7 @@ app.use('/admin', adminRouter);
 app.use('/kepala', kepalaRouter);
 app.use('/staff', staffRouter);
 app.use('/profile', profileRouter);
+app.use('/files', fileRouter);
 
 app.use((req, res, next) => {
   console.log('Request URL:', req.url);
