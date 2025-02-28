@@ -1,13 +1,17 @@
+<!-- Ini contoh -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Riwayat</title>
+    <title>Dashboard Kepala Bappeda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.3/ionicons.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
     <style>
         .hover-effect {
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -15,6 +19,14 @@
         .hover-effect:hover {
             transform: translateY(-5px);
             box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .date-input {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23999' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
         }
     </style>
 </head>
@@ -32,48 +44,59 @@
                 <h2 class="text-2xl font-bold text-[#C15E15]">Dashboard</h2>
                 
                 <!-- Filter di Sebelah Kanan -->
-                <div class="flex space-x-4">
+                <div class="flex space-x-2">
                     <select id="filterBidang" class="p-2 border rounded-md">
-                        <option value="">Pilih Bidang</option>
-                        <option value="Keuangan">Keuangan</option>
-                        <option value="Infrastruktur">Infrastruktur</option>
+                        <option value="">Semua Bidang</option>
+                        <% if (departments && departments.length > 0) { %>
+                            <% departments.forEach(dept => { %>
+                                <option value="<%= dept.deptID %>"><%= dept.deptName %></option>
+                            <% }); %>
+                        <% } %>
                     </select>
-                    <input type="date" id="tanggalMulai" class="p-2 border rounded-md">
-                    <input type="date" id="tanggalAkhir" class="p-2 border rounded-md">
-                    <button id="filterButton" class="p-2 bg-[#C15E15] text-white rounded-md">Filter</button>
+                    <input type="text" id="tanggalMulai" class="p-2 border rounded-md date-input" placeholder="Tanggal Mulai" readonly>
+                    <input type="text" id="tanggalAkhir" class="p-2 border rounded-md date-input" placeholder="Tanggal Akhir" readonly>
+                    <button id="filterButton" class="p-2 bg-[#C15E15] text-white rounded-md hover:bg-[#A64D0A] transition-colors">Filter</button>
                 </div>
             </div>
 
             <!-- Statistik Ringkas dengan Efek -->
             <div class="grid grid-cols-4 gap-4 mb-6">
-                <div class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-blue-500 text-white">
+                <a href="/kepala/tugas" class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-blue-500 text-white">
                     <ion-icon name="clipboard-outline" class="text-3xl mr-3"></ion-icon>
                     <div>
                         <h3 class="text-sm font-semibold">Rincian Diberikan</h3>
-                        <p id="rincianDiberikan" class="text-xl font-bold">0</p>
+                        <p id="rincianDiberikan" class="text-xl font-bold">
+                            <%= stats ? stats.rincianDiberikan : 0 %>
+                        </p>
                     </div>
-                </div>
-                <div class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-green-500 text-white">
-                    <ion-icon name="checkmark-done-outline" class="text-3xl mr-3"></ion-icon>
-                    <div>
-                        <h3 class="text-sm font-semibold">Rincian Selesai</h3>
-                        <p id="rincianSelesai" class="text-xl font-bold">0</p>
-                    </div>
-                </div>
-                <div class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-red-500 text-white">
+                </a>
+                <a href="/kepala/tugas" class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-red-500 text-white">
                     <ion-icon name="alert-circle-outline" class="text-3xl mr-3"></ion-icon>
                     <div>
                         <h3 class="text-sm font-semibold">Rincian Revisi</h3>
-                        <p id="rincianRevisi" class="text-xl font-bold">0</p>
+                        <p id="rincianRevisi" class="text-xl font-bold">
+                            <%= stats ? stats.rincianRevisi : 0 %>
+                        </p>
                     </div>
-                </div>
-                <div class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-[#C15E15] text-white">
+                </a>
+                <a href="/kepala/tugas" class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-yellow-600 text-white">
+                    <ion-icon name="time-outline" class="text-3xl mr-3"></ion-icon>
+                    <div>
+                        <h3 class="text-sm font-semibold">Rincian Belum Selesai</h3>
+                        <p id="rincianBelumSelesai" class="text-xl font-bold">
+                            <%= stats ? stats.rincianBelumSelesai : 0 %>
+                        </p>
+                    </div>
+                </a>
+                <a href="/kepala/riwayat" class="flex items-center p-3 rounded-lg shadow-md hover-effect bg-[#C15E15] text-white">
                     <ion-icon name="stats-chart-outline" class="text-3xl mr-3"></ion-icon>
                     <div>
-                        <h3 class="text-sm font-semibold">Total Tugas di Chart</h3>
-                        <p id="totalTugasChart" class="text-xl font-bold">0</p>
+                        <h3 class="text-sm font-semibold">Total Tugas Selesai</h3>
+                        <p id="totalTugasChart" class="text-xl font-bold">
+                            <%= stats ? stats.totalTugasChart : 0 %>
+                        </p>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Chart Container -->
@@ -84,25 +107,24 @@
 
             <!-- Total Jumlah Tugas di Barchart -->
             <div class="mt-6 p-3 bg-gray-100 rounded-lg text-center mb-8">
-                <h3 class="text-sm font-semibold text-gray-700">Total Jumlah Tugas yang Diberikan</h3>
-                <p id="totalTugasDiberikan" class="text-2xl font-bold text-[#C15E15]">0</p>
+                <h3 class="text-sm font-semibold text-gray-700">Total Tugas yang Diberikan</h3>
+                <p id="totalTugasDiberikan" class="text-2xl font-bold text-[#C15E15]">
+                    <%= stats ? stats.totalTugasDiberikan : 0 %>
+                </p>
             </div>
         </div>
     </div>
 
-   
+    <!-- Hidden input to store JSON data -->
+    <input type="hidden" id="assigneesData" value='<%= JSON.stringify(top10Assignees || []) %>'>
 
     <script>
         const ctx = document.getElementById('barChart').getContext('2d');
         let barChart;
 
-        const staffData = [
-            { nama: "Rika Amir", jumlah: 15 },
-            { nama: "Siddiq Alim", jumlah: 12 },
-            { nama: "Dina Rahma", jumlah: 10 },
-            { nama: "Budi Santoso", jumlah: 8 },
-            { nama: "Ardiansyah", jumlah: 7 }
-        ];
+        // Get data from hidden input
+        const initialAssigneesRaw = document.getElementById('assigneesData').value;
+        const initialAssignees = initialAssigneesRaw ? JSON.parse(initialAssigneesRaw) : [];
 
         function renderChart(data) {
             if (barChart) {
@@ -114,7 +136,7 @@
                 data: {
                     labels: data.map(d => d.nama),
                     datasets: [{
-                        label: 'Jumlah Tugas',
+                        label: 'Jumlah Rincian Tugas',
                         data: initialData,
                         backgroundColor: '#C15E15'
                     }]
@@ -124,8 +146,8 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: { title: { display: true, text: "Jumlah Tugas" }, beginAtZero: true },
-                        y: { title: { display: true, text: "Nama Staff" } }
+                        x: { title: { display: true, text: "Jumlah Rincian Tugas" }, beginAtZero: true },
+                        y: { title: { display: true, text: "Nama" } }
                     }
                 }
             });
@@ -146,6 +168,8 @@
         }
 
         function animateNumber(id, targetValue) {
+            const currentValue = parseInt(document.getElementById(id).innerText);
+            
             gsap.to(`#${id}`, {
                 duration: 2,
                 innerText: targetValue,
@@ -157,16 +181,99 @@
             });
         }
 
-        function updateStats() {
-            animateNumber("rincianDiberikan", 25);
-            animateNumber("rincianSelesai", 20);
-            animateNumber("rincianRevisi", 5);
-            animateNumber("totalTugasChart", staffData.reduce((sum, d) => sum + d.jumlah, 0));
-            animateNumber("totalTugasDiberikan", staffData.reduce((sum, d) => sum + d.jumlah, 0));
+        // Initialize date pickers using flatpickr
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateConfig = {
+                dateFormat: "d/m/Y",
+                locale: {
+                    firstDayOfWeek: 1,
+                    weekdays: {
+                        shorthand: ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
+                        longhand: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]
+                    },
+                    months: {
+                        shorthand: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+                        longhand: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+                    }
+                },
+                allowInput: true
+            };
+            
+            // Initialize datepickers
+            const tanggalMulaiPicker = flatpickr("#tanggalMulai", dateConfig);
+            const tanggalAkhirPicker = flatpickr("#tanggalAkhir", dateConfig);
+            
+            // Set default date range (1 Januari 2025 - 31 Desember 2025)
+            const currentYear = 2025; // Hard-coded to 2025
+            const firstDayOfYear = new Date(currentYear, 0, 1); // 1 Januari 2025
+            const lastDayOfYear = new Date(currentYear, 11, 31); // 31 Desember 2025
+            
+            tanggalMulaiPicker.setDate(firstDayOfYear);
+            tanggalAkhirPicker.setDate(lastDayOfYear);
+            
+            // Initial chart render
+            renderChart(initialAssignees);
+        });
+
+        // Parse date from DD/MM/YYYY format to YYYY-MM-DD for backend
+        function formatDateForBackend(dateString) {
+            const parts = dateString.split('/');
+            if (parts.length !== 3) return '';
+            
+            const day = parts[0];
+            const month = parts[1];
+            const year = parts[2];
+            
+            return `${year}-${month}-${day}`;
         }
 
-        updateStats();
-        renderChart(staffData);
+        // Handle filter button click
+        document.getElementById('filterButton').addEventListener('click', async function() {
+            const bidang = document.getElementById('filterBidang').value;
+            const tanggalMulaiStr = document.getElementById('tanggalMulai').value;
+            const tanggalAkhirStr = document.getElementById('tanggalAkhir').value;
+            
+            // Format dates for backend
+            const startDate = formatDateForBackend(tanggalMulaiStr);
+            const endDate = formatDateForBackend(tanggalAkhirStr);
+            
+            try {
+                // Build query string
+                let queryParams = [];
+                if (bidang) queryParams.push(`deptID=${bidang}`);
+                if (startDate) queryParams.push(`startDate=${startDate}`);
+                if (endDate) queryParams.push(`endDate=${endDate}`);
+                
+                const queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+                
+                // Fetch filtered data
+                const response = await fetch(`/kepala/dashboard/data${queryString}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch filtered data');
+                }
+                
+                const data = await response.json();
+                
+                // Update statistics with animation
+                animateNumber("rincianDiberikan", data.stats.rincianDiberikan);
+                animateNumber("rincianRevisi", data.stats.rincianRevisi);
+                animateNumber("rincianBelumSelesai", data.stats.rincianBelumSelesai);
+                animateNumber("totalTugasChart", data.stats.totalTugasChart);
+                animateNumber("totalTugasDiberikan", data.stats.totalTugasDiberikan);
+                
+                // Update chart
+                renderChart(data.top10Assignees);
+                
+            } catch (error) {
+                console.error('Error fetching filtered data:', error);
+                alert('Gagal memuat data. Silakan coba lagi.');
+            }
+        });
     </script>
      <!-- Footer -->
      <%- include('../layout/footer') %>
