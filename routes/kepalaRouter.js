@@ -17,14 +17,8 @@ const checkKepalaRole = (req, res, next) => {
     next();
 };
 
-kepalaRouter.get('/dashboard', authMiddleware, checkKepalaRole, getUser, async (req, res) => {
-    try {
-        await getUser(req, res);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-});
+kepalaRouter.get('/dashboard', authMiddleware, checkKepalaRole, getUser);
+kepalaRouter.get('/dashboard/data', authMiddleware, checkKepalaRole, getUser);
 kepalaRouter.get('/tugas', authMiddleware, checkKepalaRole, showTugas, async (req, res) => {
     try {
         await getUser(req, res);

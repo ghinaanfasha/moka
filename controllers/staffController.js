@@ -13,9 +13,117 @@ const getUser = async (req, res) => {
         const currentUser = await User.findByPk(req.user.userID, {
             include: [
                 { model: Role, as: 'role', attributes: ['roleName'] },
-                { model: Dept, as: 'dept', attributes: ['deptName'] }
+                { model: Dept, as: 'dept', attributes: ['deptName', 'deptID'] }
             ]
         });
+
+        let dateFilter = {};
+        if (req.query.startDate && req.query.endDate) {
+            dateFilter = {
+                createdAt: {
+                    [Op.between]: [
+                        new Date(req.query.startDate + ' 00:00:00'),
+                        new Date(req.query.endDate + ' 23:59:59')
+                    ]
+                }
+            };
+        } else {
+            const currentYear = new Date().getFullYear();
+            const startDate = new Date(currentYear, 0, 1);
+            const endDate = new Date(currentYear, 11, 31, 23, 59, 59);
+            
+            dateFilter = {
+                createdAt: {
+                    [Op.between]: [startDate, endDate]
+                }
+            };
+        }
+
+        const receivedBreakdowns = await TaskBreakdown.findAll({
+            where: {
+                assigneeID: req.user.userID,
+                ...dateFilter
+            },
+            include: [{
+                model: Task,
+                as: 'task'
+            }]
+        });
+
+        const createdTasks = await Task.findAll({
+            where: {
+                assignorID: req.user.userID,
+                ...dateFilter
+            },
+            include: [{
+                model: TaskBreakdown,
+                as: 'breakdowns',
+                include: [{
+                    model: User,
+                    as: 'assignee',
+                    include: [{
+                        model: Dept,
+                        as: 'dept'
+                    }]
+                }]
+            }]
+        });
+
+        const unreadTaskIds = new Set(
+            receivedBreakdowns
+                .filter(bd => bd.readStatus === 'Belum dibaca')
+                .map(bd => bd.task.taskID)
+        );
+
+        const stats = {
+            tugasBelumDibaca: unreadTaskIds.size,
+            rincianBelumSelesai: receivedBreakdowns.filter(bd => bd.breakdownStatus !== 'Selesai').length,
+            rincianDirevisi: createdTasks.flatMap(task => task.breakdowns)
+                .filter(bd => bd.taskStatus === 'Revisi').length,
+            rincianDiberikan: createdTasks.flatMap(task => task.breakdowns)
+                .filter(bd => bd.taskStatus === 'Diberikan').length,
+            totalTugasDiberikan: createdTasks.length
+        };
+
+        const departmentID = currentUser.dept ? currentUser.dept.deptID : null;
+        let top10Assignees = [];
+        
+        if (departmentID) {
+            const departmentBreakdowns = await TaskBreakdown.findAll({
+                where: {
+                    ...dateFilter
+                },
+                include: [{
+                    model: User,
+                    as: 'assignee',
+                    include: [{
+                        model: Dept,
+                        as: 'dept',
+                        where: { deptID: departmentID }
+                    }]
+                }]
+            });
+
+            const assigneeCounts = {};
+            departmentBreakdowns.forEach(breakdown => {
+                if (breakdown.assignee) {
+                    const assigneeID = breakdown.assignee.userID;
+                    const assigneeName = breakdown.assignee.username;
+                    
+                    if (!assigneeCounts[assigneeID]) {
+                        assigneeCounts[assigneeID] = {
+                            nama: assigneeName,
+                            jumlah: 0
+                        };
+                    }
+                    assigneeCounts[assigneeID].jumlah += 1;
+                }
+            });
+            
+            top10Assignees = Object.values(assigneeCounts)
+                .sort((a, b) => b.jumlah - a.jumlah)
+                .slice(0, 10);
+        }
 
         const userData = {
             id: currentUser.userID,
@@ -24,12 +132,24 @@ const getUser = async (req, res) => {
             bidang: currentUser.dept ? currentUser.dept.deptName : '-'
         };
 
+        if (req.xhr || req.headers.accept.indexOf('application/json') > -1) {
+            return res.json({
+                stats,
+                top10Assignees
+            });
+        }
+
         res.render('staff/dashboard', { 
-            user: userData,  
+            user: userData,
+            stats,
+            top10Assignees,
             currentPage: '/staff/dashboard' 
         });
     } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching dashboard data:', error);
+        if (req.xhr || req.headers.accept.indexOf('application/json') > -1) {
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
         res.status(500).render('error', { 
             message: 'Internal Server Error', 
             error: error 

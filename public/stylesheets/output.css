@@ -1,4 +1,10 @@
 /*! tailwindcss v4.0.3 | MIT License | https://tailwindcss.com */
+.collapse {
+  visibility: collapse;
+}
+.visible {
+  visibility: visible;
+}
 .absolute {
   position: absolute;
 }
@@ -125,12 +131,6 @@
 .w-\[130px\] {
   width: 130px;
 }
-.w-\[250px\] {
-  width: 250px;
-}
-.w-\[400px\] {
-  width: 400px;
-}
 .w-\[1229px\] {
   width: 1229px;
 }
@@ -139,6 +139,12 @@
 }
 .w-\[140px\] {
   width: 140px;
+}
+.w-\[250px\] {
+  width: 250px;
+}
+.w-\[400px\] {
+  width: 400px;
 }
 .w-full {
   width: 100%;
@@ -176,6 +182,9 @@
 }
 .grid-cols-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .flex-col {
   flex-direction: column;
@@ -243,6 +252,10 @@
   border-left-style: var(--tw-border-style);
   border-left-width: 1px;
 }
+.border-dashed {
+  --tw-border-style: dashed;
+  border-style: dashed;
+}
 .border-\[\#C15E15\] {
   border-color: #C15E15;
 }
@@ -291,6 +304,10 @@
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
 }
+.backdrop-filter {
+  -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+  backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+}
 .transition {
   transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter;
   transition-timing-function: var(--tw-ease, ease);
@@ -309,6 +326,13 @@
   &:hover {
     @media (hover: hover) {
       background-color: #A14B10;
+    }
+  }
+}
+.hover\:bg-\[\#A64D0A\] {
+  &:hover {
+    @media (hover: hover) {
+      background-color: #A64D0A;
     }
   }
 }
@@ -443,6 +467,42 @@
   inherits: false;
 }
 @property --tw-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-sepia {
   syntax: "*";
   inherits: false;
 }

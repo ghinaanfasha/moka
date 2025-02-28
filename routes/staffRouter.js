@@ -20,14 +20,8 @@ const checkStaffRole = (req, res, next) => {
     next();
 };
 
-staffRouter.get('/dashboard', authMiddleware, checkStaffRole, getUser, async (req, res) => {
-    try {
-        await getUser(req, res);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-});
+staffRouter.get('/dashboard', authMiddleware, checkStaffRole, getUser);
+staffRouter.get('/dashboard/data', authMiddleware, checkStaffRole, getUser);
 
 staffRouter.get('/tugas', authMiddleware, checkStaffRole, showTugas, async (req, res) => {
     try {

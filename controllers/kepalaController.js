@@ -14,6 +14,111 @@ const getUser = async (req, res) => {
             ]
         });
 
+        let whereCondition = {
+            assignorID: req.user.userID
+        };
+
+        if (req.query.startDate && req.query.endDate) {
+            whereCondition.createdAt = {
+                [Op.between]: [
+                    new Date(req.query.startDate + ' 00:00:00'),
+                    new Date(req.query.endDate + ' 23:59:59')
+                ]
+            };
+        } else {
+            const currentYear = new Date().getFullYear();
+            const startDate = new Date(currentYear, 0, 1);
+            const endDate = new Date(currentYear, 11, 31, 23, 59, 59); 
+            
+            whereCondition.createdAt = {
+                [Op.between]: [startDate, endDate]
+            };
+        }
+
+        const departments = await Dept.findAll({
+            attributes: ['deptID', 'deptName']
+        });
+
+        const tasks = await Task.findAll({
+            where: whereCondition,
+            include: [{
+                model: TaskBreakdown,
+                as: 'breakdowns',
+                include: [{
+                    model: User,
+                    as: 'assignee',
+                    attributes: ['userID', 'username'],
+                    include: [{
+                        model: Dept,
+                        as: 'dept',
+                        attributes: ['deptID', 'deptName']
+                    }]
+                }]
+            }]
+        });
+
+        let filteredTasks = JSON.parse(JSON.stringify(tasks)); 
+        let filteredBreakdowns = [];
+        
+        if (req.query.deptID) {
+            filteredTasks = filteredTasks.map(task => {
+                task.breakdowns = task.breakdowns.filter(breakdown => 
+                    breakdown.assignee && 
+                    breakdown.assignee.dept && 
+                    breakdown.assignee.dept.deptID.toString() === req.query.deptID
+                );
+                
+                return task;
+            }).filter(task => task.breakdowns.length > 0);
+            
+            filteredBreakdowns = filteredTasks.flatMap(task => task.breakdowns);
+        } else {
+            filteredBreakdowns = filteredTasks.flatMap(task => task.breakdowns);
+        }
+
+        const completedTasksQuery = {
+            where: whereCondition,
+            include: [{
+                model: TaskBreakdown,
+                as: 'breakdowns'
+            }]
+        };
+        
+        const allTasks = await Task.findAll(completedTasksQuery);
+        
+        const completedTasks = allTasks.filter(task => {
+            const breakdowns = task.breakdowns || [];
+            return breakdowns.length > 0 && breakdowns.every(bd => bd.taskStatus === 'Selesai');
+        });
+
+        const stats = {
+            rincianDiberikan: filteredBreakdowns.filter(b => b.taskStatus === 'Diberikan').length,
+            rincianRevisi: filteredBreakdowns.filter(b => b.taskStatus === 'Revisi').length,
+            rincianBelumSelesai: filteredBreakdowns.filter(b => b.taskStatus !== 'Selesai').length,
+            totalTugasChart: completedTasks.length, // Total tugas yang selesai (di riwayat)
+            totalTugasDiberikan: filteredTasks.length // Total semua tugas yang diberikan
+        };
+
+        const assigneeCounts = {};
+        filteredBreakdowns.forEach(breakdown => {
+            if (breakdown.assignee) {
+                const assigneeID = breakdown.assignee.userID;
+                const assigneeName = breakdown.assignee.username;
+                
+                if (!assigneeCounts[assigneeID]) {
+                    assigneeCounts[assigneeID] = {
+                        nama: assigneeName,
+                        jumlah: 0
+                    };
+                }
+                assigneeCounts[assigneeID].jumlah += 1;
+            }
+        });
+
+        const top10Assignees = Object.values(assigneeCounts)
+            .sort((a, b) => b.jumlah - a.jumlah)
+            .slice(0, 10);
+
         const userData = {
             id: currentUser.userID,
             username: currentUser.username,
@@ -21,12 +126,26 @@ const getUser = async (req, res) => {
             bidang: currentUser.dept ? currentUser.dept.deptName : '-'
         };
 
+        if (req.xhr || req.headers.accept.indexOf('application/json') > -1) {
+            return res.json({
+                stats,
+                top10Assignees,
+                departments
+            });
+        }
+
         res.render('kepala/dashboard', { 
-            user: userData,  
+            user: userData,
+            stats, 
+            top10Assignees,
+            departments,  
             currentPage: '/kepala/dashboard' 
         });
     } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching dashboard data:', error);
+        if (req.xhr || req.headers.accept.indexOf('application/json') > -1) {
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
         res.status(500).render('error', { 
             message: 'Internal Server Error', 
             error: error 
