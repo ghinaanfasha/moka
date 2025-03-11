@@ -31,7 +31,7 @@ const login = async (req, res, next) => {
       if (!user) {
         return res.status(404).json({
           errors: ['User not found'],
-          message: "Username atau Password Salah",
+          message: "Username atau Password salah!",
           data: null
         });
       }
@@ -41,7 +41,7 @@ const login = async (req, res, next) => {
       if (!isPasswordValid) {
         return res.status(401).json({
           errors: ['Invalid credentials'],
-          message: "Username atau Password Salah",
+          message: "Username atau Password salah!",
           data: null
         });
       }

@@ -26,6 +26,12 @@
 .top-\[-20px\] {
   top: -20px;
 }
+.top-\[40\%\] {
+  top: 40%;
+}
+.top-\[45\%\] {
+  top: 45%;
+}
 .top-\[70px\] {
   top: 70px;
 }
@@ -182,9 +188,6 @@
 }
 .grid-cols-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-.grid-cols-5 {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .flex-col {
   flex-direction: column;

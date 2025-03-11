@@ -37,8 +37,11 @@
                 <label for="password" class="block text-[#C15E15] font-semibold">Password</label>
                 <div class="relative">
                     <input type="password" id="password" name="password" class="w-full p-3 border border-gray-300 rounded-lg mt-1 mb-4" placeholder="Password" required />
-                    <i id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600 fas fa-eye-slash"></i>
+                    <i id="togglePassword" class="absolute right-3 top-[40%] transform -translate-y-1/2 cursor-pointer text-gray-600 fas fa-eye-slash"></i>
                 </div>
+                
+                <!-- Error Message Container -->
+                <div id="errorMessage" class="text-red-600 text-sm mb-4 text-center hidden"></div>
                 
                 <button type="submit" class="w-full bg-[#F15E15] text-white p-3 rounded-lg text-lg font-semibold hover:bg-[#d14e10]">Login</button>
             </form>
@@ -46,13 +49,13 @@
     </div>
 
     <script>
-        function redirectWithToken(path) {
-            const token = localStorage.getItem('accessToken');
-            window.location.href = path;
-        }
+        const errorMessageElement = document.getElementById('errorMessage');
 
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+            // Reset error message
+            errorMessageElement.textContent = '';
+            errorMessageElement.classList.add('hidden');
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -77,11 +80,14 @@
                     // Redirect to the URL provided by the server
                     window.location.href = data.data.redirectUrl;
                 } else {
-                    alert('Login gagal: ' + data.message);
+                    // Display error message
+                    errorMessageElement.textContent = data.message || 'Login gagal';
+                    errorMessageElement.classList.remove('hidden');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan saat login');
+                errorMessageElement.textContent = 'Terjadi kesalahan saat login';
+                errorMessageElement.classList.remove('hidden');
             }
         });
       
